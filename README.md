@@ -1,0 +1,2 @@
+# CoEndoYoneda Equivalence and Purity
+
