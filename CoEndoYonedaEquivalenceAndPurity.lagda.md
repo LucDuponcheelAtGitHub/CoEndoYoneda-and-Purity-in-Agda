@@ -19,12 +19,10 @@ Set levels are one of the more challenging aspects of proof assistants in genera
 particular.
 
 They are, among others, introduced to avoid paradoxes like Russel's paradox :
-"The set of all sets is not a set.".
+"the set of all sets is not a set".
 
 So, yes, you will, from time to time, be confronted with some "set level mumbo-jumbo" but, frankly,
 in this document, the set level impact is very limited.
-
-We encode equivalence as two functions, `from` and `to`, that are each other's inverses.
 
 We need function composition, `_•_`, and function identity, `idf`. We are `renaming` in order to
 disambigate them from morphism composition and morphism identity.
@@ -39,6 +37,8 @@ We need the propositional binary equality relation, `_≡_`.
 open import Relation.Binary.PropositionalEquality using (_≡_)
 ```
 
+We encode equivalence as two functions, `from` and `to`, that are each other's inverses.
+
 ```agda
 record _⇿_ {ℓ ℓ' : Level} (A : Set ℓ) (B : Set ℓ') : Set (ℓ ⊔ ℓ') where
   field
@@ -48,7 +48,7 @@ record _⇿_ {ℓ ℓ' : Level} (A : Set ℓ) (B : Set ℓ') : Set (ℓ ⊔ ℓ'
     from_to : from • to ≡ idf
 ```
 
-To start with, we set the scene with encoding the standard coEndoYoneda equivalence.
+To start with, we set the scene by encoding the standard coEndoYoneda equivalence.
 
 We need the category of sets instance, `Sets` , functors, `Functor` and natural transformations,
 `NaturalTransformation`. 
@@ -113,7 +113,7 @@ record StandardCoEndoYonedaEquivalence : Set (suc ℓ) where
     }
 ```
 
-Given an endofunctor, `F : Functor (Sets ℓ) (Sets ℓ)`, of the category of sets `Sets ℓ` and an
+Given an endofunctor, `F : Functor (Sets ℓ) (Sets ℓ)`, of the category of sets, `Sets ℓ`, and an
 object `X`, the standard coEndoYoneda equivalence is an quivalence between, on the one hand,
 natural transformations, `NaturalTransformation (Sets_CYEF X) F`, from `Sets_CYEF X` to `F` and,
 on the other hand, elements of the set `(F₀ F) X`. Recall that we are dealing with the category of
@@ -196,7 +196,7 @@ involving a functor, `CYF`, to the category of sets, `Sets ℓ`, from any catego
 the encoding of the standard coYoneda equivalence is surprisingly similar to the encoding of the
 standard coEndoYoneda equivalence equivalence.
 
-The encoding now uses morphism composition, `_∘_`, and morphism identity, `id`
+The encoding now uses morphism composition, `_∘_`, and morphism identity, `id`.
 
 The encoding involves using field `strict` to bridge the gap between the equivalence relation, `≈`,
 of category `C` and propositional equality `≡`.
@@ -206,11 +206,21 @@ frankly, in this document, the `strict` impact is very limited.
 
 Please pay attention to the symbols `≡` and `≈`.
 
+We need `Category` now.
+
 ```agda
 open import Categories.Category.Core using (Category)
+```
 
+We also need tranditivity, `trans`, and congruence `cong` now.
+
+```agda
 open import Relation.Binary.PropositionalEquality using (trans; cong)
+```
 
+We are ready now for `StandardCoYonedaEquivalence`.
+
+```agda
 record StandardCoYonedaEquivalence 
   (C : Category (suc ℓ) ℓ ℓ ) : Set (suc ℓ) where
 
@@ -319,7 +329,7 @@ Next we make level lifting available.
 open import Level using (Lift; lift)
 ```
 
-Next we make functor composition and (renamed) functor identity available.
+Next we make functor composition and functor identity available, `renaming` the latter.
 
 ```agda
 open import Categories.Functor using (_∘F_) renaming (id to idF)
@@ -391,8 +401,8 @@ The functional category `FunctionalCategory` declares a basic functional categor
 Using `T` we define some convenient abbreviation
 - `GFF` for some "global like" functor involving `CYF` and `FF`
 
-`nu` now comes with with a law `nu-eq` relating it with `FF` where `nu-eq-T` is a special case of,
-as illustrated in `nu-eq-T'`, a `private` definition that is never used. 
+`nu` now comes with with a law `nu-eq` relating it with `FF`. `nu-eq-T` is a special case of
+`nu-eq` as illustrated with `nu-eq-T'`, a `private` definition that is never used. 
 
 We declare a monadic multiplication like natural transformation `mu` and define an abbreviation for its
 morphisms as `ηm`.
@@ -435,8 +445,8 @@ record FunctionalCategory
 ```
 
 The coEndoYoneda equivalence is a pointfree version of the standard coEndoYoneda equivalence. It
-replaces elements with morphisms that are "global like" elements and it replaces application with
-composition. 
+replaces elements with morphisms that are "global like" elements and it replaces function
+application with morphism composition. 
 
 We define some convenient abbreviations
 
@@ -446,9 +456,9 @@ We define some convenient abbreviations
 The most important definitions are
 
 - `τx2ggfx τx = η τx X ∘ FF.F₁ (λ _ → C.id)`
-   corresponding with `τx2fx τx = η τx X C.id` 
+  cfr. `τx2fx τx = η τx X C.id` 
 - `ggfx2τx-η ggfx Y = ηm (F₀ F Y) ∘ FF.F₁ (λ f → F₁ (G ∘F F) f ∘ ggfx)`
-   corresponding with `fx2τx-η fx Y = λ f → (F₁ F) f fx` corresponds 
+  cfr.`fx2τx-η fx Y = λ f → (F₁ F) f fx`
 
 The coEndoYoneda equivalence and standard coEndoYoneda equivalence are similar
 "getting the types right puzzles".
@@ -617,7 +627,7 @@ record CoEndoYonedaEquivalence
 So we have defined requirements for categories to enable to state and prove a pointfree
 coEndoYoneda equivalence.
 
-But, apart from, trivially, `Sets ℓ`, sets with pure functions, satisfying those requirements, are
+But, apart from, trivially, `Sets ℓ`, sets with pure functions satisfying those requirements, are
 there any other interesting categories satisfying those requirements? 
 
 It turns out is hard to find any.
@@ -734,11 +744,11 @@ As you read the following proofs, pay close attention to the difference between 
 
 In a Kleisli category, `f ≈ g` represents pointwise equality (`∀ x → f x ≡ g x`). 
 
-When we use `≈`, we are doing standard **hom-reasoning** within the category.
+When we use `≈`, we are doing standard hom-reasoning within the category.
 
 However, to prove that two records are equal, their fields must be propositionally equal (`≡`).
 
-Proving that `f ≡ g` requires **equational reasoning** and often invokes function extensionality
+Proving that `f ≡ g` requires equational reasoning and often invokes function extensionality
 (`funext`).
 
 Copy-pasting proofs from hom-reasoning into equational reasoning blocks will cause frustrating type
@@ -746,6 +756,9 @@ errors because the symbols look almost identical but have entirely different sem
 
 Anyway, note that we are, essentially, back to equational reasoning.
 
+Note that the code is work in progress and some of the `trans` usages are likely to be replaced by
+equational reasoning `begin ... ∎` code.
+ 
 `BasicFunctionalCategory` is a dependent `record`. The type of the `nu` field  depends on the
 `strict` field, making standard propositional equality `≡` impossible to state directly.
 
