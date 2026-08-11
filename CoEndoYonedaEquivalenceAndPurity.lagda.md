@@ -24,8 +24,6 @@ They are, among others, introduced to avoid paradoxes like Russel's paradox :
 So, yes, you will, from time to time, be confronted with some "set level mumbo-jumbo" but, frankly,
 in this document, the set level impact is very limited.
 
-### Equivalence
-
 We encode equivalence as two functions, `from` and `to`, that are each other's inverses.
 
 We need function composition, `_•_`, and function identity, `idf`. We are `renaming` in order to
@@ -49,8 +47,6 @@ record _⇿_ {ℓ ℓ' : Level} (A : Set ℓ) (B : Set ℓ') : Set (ℓ ⊔ ℓ'
     to_from : to • from ≡ idf
     from_to : from • to ≡ idf
 ```
-
-## Standard CoEndoYoneda Equivalence
 
 To start with, we set the scene with encoding the standard coEndoYoneda equivalence.
 
