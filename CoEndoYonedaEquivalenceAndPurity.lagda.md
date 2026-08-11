@@ -132,7 +132,7 @@ of `fx2τx` is more complex because it also involves the natural transformation 
 the proof is simple (I did not write it is easy). It uses the `homomorphism` functor law.
 
 The `equivalence` definition uses a `postulate` about natural transformations that is similar to
-the extensionality postulate about functions.
+the extensionality `postulate` about functions.
 
 ```agda
   module StandardEquivalence 
@@ -762,14 +762,14 @@ equational reasoning `begin ... ∎` code.
 `BasicFunctionalCategory` is a dependent `record`. The type of the `nu` field  depends on the
 `strict` field, making standard propositional equality `≡` impossible to state directly.
 
-We postulate the structural assembly of the  dependent record using heterogeneous equality `≅` to
+We `postulate` the structural assembly of the  dependent record using heterogeneous equality `≅` to
 bypass the boilerplate.
 
 The `strict` field is uniquely determined by uniqueness of identity proofs `uip` and function
 extensionality, so any two instances are propositionally equal.
 
 The `nu` field is uniquely determined by the categorical structures involved.
-We postulate this heterogeneous equality as the structural uniqueness principle.
+We `postulate` this heterogeneous equality as the structural uniqueness principle.
 
 ```agda
   postulate
