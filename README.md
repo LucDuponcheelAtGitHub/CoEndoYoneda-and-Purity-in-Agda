@@ -33,5 +33,7 @@ effect free.
 
 Considering monads as computations, expressions with side effects, and noting that
 computations are pointful, what I have defined is a
-*pointfree classification of the pointful concept*.
+*pointfree classification of the pointful concept* which I like to refer to as
+*computation (execution) referential transparency*, cfr.
+*expression (evaluation) referential transparency*.
 
