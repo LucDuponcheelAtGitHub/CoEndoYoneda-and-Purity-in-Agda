@@ -6,6 +6,25 @@ module CoEndoYonedaEquivalenceAndPurity where
 
 ## Equivalence
 
+### Renamed Function Composition and Identity
+
+We need function composition and function identity.
+
+We are `renaming` composition to `_•_` and identity to `idf` in order to disambigate them from
+morphism composition and morphism identity.
+
+```agda
+open import Function.Base renaming (_∘_ to _•_; id to idf)
+```
+
+### Propositional Binary Equality Relation
+
+We need the propositional binary equality relation, `_≡_`.
+
+```agda
+open import Relation.Binary.PropositionalEquality using (_≡_)
+```
+
 ### Set levels
 
 First we need to `import` some set level library artifacts, `Level` in general and `_⊔_` in
@@ -19,25 +38,15 @@ Set levels are one of the more challenging aspects of proof assistants in genera
 particular.
 
 They are, among others, introduced to avoid paradoxes like Russel's paradox :
-"the set of all sets is not a set".
+*"the set of all sets is not a set"*.
 
-So, yes, you will, from time to time, be confronted with some "set level mumbo-jumbo" but, frankly,
-in this document, the set level impact is very limited.
+So, yes, you will, from time to time, be confronted with some "`Set` `Level` mumbo-jumbo" but,
+frankly, in this document, the set level impact is very limited.
 
-We need function composition, `_•_`, and function identity, `idf`. We are `renaming` in order to
-disambigate them from morphism composition and morphism identity.
+### Equivalence
 
-```agda
-open import Function.Base renaming (_∘_ to _•_; id to idf)
-```
-
-We need the propositional binary equality relation, `_≡_`.
-
-```agda
-open import Relation.Binary.PropositionalEquality using (_≡_)
-```
-
-We encode equivalence as two functions, `from` and `to`, that are each other's inverses.
+We encode equivalence as a `record` declaring function `field`s, `from` and `to`, that are each
+other's inverses, as declared by `field`s, `to_from` and `from_to`.
 
 ```agda
 record _⇿_ {ℓ ℓ' : Level} (A : Set ℓ) (B : Set ℓ') : Set (ℓ ⊔ ℓ') where
@@ -48,10 +57,12 @@ record _⇿_ {ℓ ℓ' : Level} (A : Set ℓ) (B : Set ℓ') : Set (ℓ ⊔ ℓ'
     from_to : from • to ≡ idf
 ```
 
+## Standard CoEndoYoneda Equivalence
+
 To start with, we set the scene by encoding the standard coEndoYoneda equivalence.
 
-We need the category of sets instance, `Sets` , functors, `Functor` and natural transformations,
-`NaturalTransformation`. 
+We need the category of sets and functions instance, `Sets`, functors, `Functor`, and natural
+transformations, `NaturalTransformation`. 
 
 It is convenient to `open` both `Functor` and `NaturalTransformation`.
 
@@ -69,7 +80,8 @@ open NaturalTransformation
 We need definitional equality, `refl`, symmetry of equality, `sym`, and propositional
 extensionality `Extensionality`.
 
-`Extensionality` extends propositions of values to functions.
+Since we are dealing with the category of sets and functions instance we need `Extensionality`
+extending propositions of values to functions.
 
 `Extensionality` is introduced as a `postulate` named `funext`.
 
@@ -77,8 +89,7 @@ extensionality `Extensionality`.
 open import Relation.Binary.PropositionalEquality using (refl; sym)
 open import Axiom.Extensionality.Propositional using (Extensionality)
 
-postulate
-  funext : ∀ {a b} → Extensionality a b
+postulate funext : ∀ {a b} → Extensionality a b
 ```
 
 The standard coEndoYoneda equivalence has a set level that is one level higher than the set level
@@ -96,7 +107,9 @@ i.e. set, `Y : Set ℓ` to all morphisms, i.e. functions, `X → Y` from `X` to 
 level, maps every morphism, i.e. function, `f : Y → Z` to composing it with all morphisms, i.e.
 functions, `g : X → Y` obtaining morphisms, i.e. functions, `f • g : X → Z`.
 
-The standard coEndoYoneda equivalence also comes with functor law proofs.
+Feel free to add type annotations to verify some of the statement above.
+
+As always `Sets_CYEF` also comes with functor law proofs.
 
 ```agda
 variable ℓ : Level
@@ -107,17 +120,17 @@ record StandardCoEndoYonedaEquivalence : Set (suc ℓ) where
   Sets_CYEF X = record
     { F₀ = λ Y → X → Y
     ; F₁ = λ f g → f • g
-    ; identity = λ {Y} g → refl
-    ; homomorphism = λ {Y Z W f h} g → refl 
-    ; F-resp-≈ = λ f≈h g → funext (λ x → f≈h (g x))
+    ; identity = λ g → refl
+    ; homomorphism = λ g → refl 
+    ; F-resp-≈ = λ f≈h g → funext (f≈h • g)
     }
 ```
 
 Given an endofunctor, `F : Functor (Sets ℓ) (Sets ℓ)`, of the category of sets, `Sets ℓ`, and an
-object `X`, the standard coEndoYoneda equivalence is an quivalence between, on the one hand,
-natural transformations, `NaturalTransformation (Sets_CYEF X) F`, from `Sets_CYEF X` to `F` and,
-on the other hand, elements of the set `(F₀ F) X`. Recall that we are dealing with the category of
-sets.
+object `X : Set ℓ`, the standard coEndoYoneda equivalence is an quivalence between, on the one
+hand, natural transformations, `NaturalTransformation (Sets_CYEF X) F`, from `Sets_CYEF X` to `F`
+and, on the other hand, elements of the set `(F₀ F) X`. Recall that we are dealing with the
+category of sets and functions.
 
 This equivalence is the foundation of studying sets, `X`, by studying all functions, `X → Y`, from
 it to sets `Y`.
@@ -204,15 +217,18 @@ of category `C` and propositional equality `≡`.
 So, yes, you will, from time to time, be confronted with some "`strict` usage mumbo-jumbo" but,
 frankly, in this document, the `strict` impact is very limited.
 
+> [!WARNING]
+> **(`≡`) vs  (`≈`)**
+> 
 Please pay attention to the symbols `≡` and `≈`.
 
-We need `Category` now.
+We need `Category`.
 
 ```agda
 open import Categories.Category.Core using (Category)
 ```
 
-We also need transitivity, `trans`, and congruence, `cong`, now.
+We also need transitivity, `trans`, and congruence, `cong`.
 
 ```agda
 open import Relation.Binary.PropositionalEquality using (trans; cong)
@@ -296,7 +312,8 @@ Only the `from_to` proof is more involved, using `strict`.
       ; from_to = 
           funext (λ τ →
             to-sets-nt-eq (λ Y →
-              funext (λ f → trans (sym (commute τ f id)) (cong (η τ Y) (strict identityʳ)))))
+              funext (λ f → 
+                trans (sym (commute τ f id)) (cong (η τ Y) (strict identityʳ)))))
       }
 ```
 
@@ -311,11 +328,10 @@ In this section we are going to generalize to endofunctors `F : Functor C C` by 
 functor. This functor can then be composed with functor `CYF : Obj → Functor C (Sets ℓ)` to obtain
 an endofunctor `CYEF : Obj → Functor C C`.
 
-Think of `FF` as declaring functions as pure morphisms, similar to the `arr` member of
-`class Arrow` in Haskell.
-
 Since `Sets ℓ` is no more involved, we are going to work in a pointfree way with morphisms that are
 "global like" elements instead of in a pointful way with elements.
+
+### Basic Functional Category
 
 First we make the terminal `⊤` object of `Sets ℓ` and it's unique element `tt` available.
 
@@ -395,21 +411,22 @@ record BasicFunctionalCategory
   ηu = η nu
 ```
 
-The functional category `FunctionalCategory` declares a basic functional category
+### Functional Category
+
+The functional category `FunctionalCategory` declares a basic functional category `field`
 `bfc : BasicFunctionalCategory C FF` and makes it available for further usage.
 
 Using `T` we define some convenient abbreviation
 - `GFF` for some "global like" functor involving `CYF` and `FF`
 
-`nu` now comes with with a law `nu-eq` relating it with `FF`. `nu-eq-T` is a special case of
-`nu-eq` as illustrated with `nu-eq-T'`, a `private` definition that is never used. 
+`nu` now comes with a law `nu-eq` relating it with `FF`. `nu-eq-T` is a special case of
+`nu-eq-T` as illustrated with `nu-eq-T'`, a `private` definition that is never used. 
 
-We declare a monadic multiplication like natural transformation `mu` and define an abbreviation for its
-morphisms as `ηm`.
+We declare a monadic multiplication like natural transformation `mu` and define an abbreviation for
+its morphisms as `ηm`.
 
 `mu` comes with with a monadic left identity law `monad-idˡ` (the monadic right identity law
 `monad-idʳ` is not needed and is commented out). 
-
 
 ```agda
 record FunctionalCategory 
@@ -434,8 +451,8 @@ record FunctionalCategory
 
     mu : NaturalTransformation (GEFF ∘F GEFF) GEFF  
 
-    monad-idˡ : ∀ {X} → η mu X ∘ η nu (F₀ GEFF X) ≈ C.id
-    -- monad-idʳ : ∀ {X} → η mu X ∘ F₁ GEFF (η nu X) ≈ C.id    
+    monad-idˡ : ∀ {X} → η mu X ∘ η nu (F₀ GEFF X) ≈ id
+    -- monad-idʳ : ∀ {X} → η mu X ∘ F₁ GEFF (η nu X) ≈ id    
 
   private nu-eq-T' : η nu (FF.F₀ T) ≡ FF.F₁ (λ (t : T) → FF.F₁ (λ _ → t))
   nu-eq-T' = strict (nu-eq {W = T})
@@ -455,8 +472,8 @@ We define some convenient abbreviations
 
 The most important definitions are
 
-- `τx2ggfx τx = η τx X ∘ FF.F₁ (λ _ → C.id)`
-  cfr. `τx2fx τx = η τx X C.id` 
+- `τx2ggfx τx = η τx X ∘ FF.F₁ (λ _ → id)`
+  cfr. `τx2fx τx = η τx X id` 
 - `ggfx2τx-η ggfx Y = ηm (F₀ F Y) ∘ FF.F₁ (λ f → F₁ (G ∘F F) f ∘ ggfx)`
   cfr.`fx2τx-η fx Y = λ f → (F₁ F) f fx`
 
@@ -498,7 +515,7 @@ record CoEndoYonedaEquivalence
     GG = GFF ∘F GEFF
 
     τx2ggfx : NaturalTransformation (CYEF X) (G ∘F F) → F₀ (GG ∘F F) X
-    τx2ggfx τx = η τx X ∘ FF.F₁ (λ _ → C.id)
+    τx2ggfx τx = η τx X ∘ FF.F₁ (λ _ → id)
 
     ggfx2τx-η : F₀ (GG ∘F F) X → ∀ Y → (F₀ (CYEF X) Y) ⇒ (F₀ (G ∘F F) Y)
     ggfx2τx-η ggfx Y = ηm ((F₀ F) Y) ∘ FF.F₁ (λ f → F₁ (G ∘F F) f ∘ ggfx)
@@ -518,7 +535,8 @@ record CoEndoYonedaEquivalence
       ηm (F₀ F Z) ∘ FF.F₁ (λ g → (F₁ (G ∘F F) f ∘ F₁ (G ∘F F) g) ∘ ggfx)
         ≈⟨ ∘-resp-≈ʳ (F-resp-≈ FF (λ g → strict assoc)) ⟩
       ηm (F₀ F Z) ∘ FF.F₁ (λ g → F₁ (G ∘F F) f ∘ (F₁ (G ∘F F) g ∘ ggfx))
-        ≈⟨ ∘-resp-≈ʳ (homomorphism FF {f = λ g → F₁ (G ∘F F) g ∘ ggfx} {g = λ x → F₁ (G ∘F F) f ∘ x}) ⟩
+        ≈⟨ ∘-resp-≈ʳ 
+            (homomorphism FF {f = λ g → F₁ (G ∘F F) g ∘ ggfx} {g = λ x → F₁ (G ∘F F) f ∘ x}) ⟩
       ηm (F₀ F Z) ∘ (FF.F₁ (λ x → F₁ (G ∘F F) f ∘ x) ∘ FF.F₁ (λ g → F₁ (G ∘F F) g ∘ ggfx))
         ≈⟨ h-sym assoc ⟩
       (ηm (F₀ F Z) ∘ FF.F₁ (λ x → F₁ (G ∘F F) f ∘ x)) ∘ FF.F₁ (λ g → F₁ (G ∘F F) g ∘ ggfx)
@@ -553,17 +571,17 @@ record CoEndoYonedaEquivalence
           funext (λ ggfx → strict (begin
             τx2ggfx (ggfx2τx ggfx)
               ≈⟨ h-refl ⟩
-            (ηm (F₀ F X) ∘ FF.F₁ (λ f → F₁ (G ∘F F) f ∘ ggfx)) ∘ FF.F₁ (λ _ → C.id)
+            (ηm (F₀ F X) ∘ FF.F₁ (λ f → F₁ (G ∘F F) f ∘ ggfx)) ∘ FF.F₁ (λ _ → id)
               ≈⟨ assoc ⟩
-            ηm (F₀ F X) ∘ (FF.F₁ (λ f → F₁ (G ∘F F) f ∘ ggfx) ∘ FF.F₁ (λ _ → C.id))
+            ηm (F₀ F X) ∘ (FF.F₁ (λ f → F₁ (G ∘F F) f ∘ ggfx) ∘ FF.F₁ (λ _ → id))
               ≈⟨ ∘-resp-≈ʳ (h-sym (homomorphism FF)) ⟩
-            ηm (F₀ F X) ∘ FF.F₁ (λ x → F₁ (G ∘F F) C.id ∘ ggfx)
+            ηm (F₀ F X) ∘ FF.F₁ (λ x → F₁ (G ∘F F) id ∘ ggfx)
               ≈⟨ ∘-resp-≈ʳ (F-resp-≈ FF (λ x → strict (∘-resp-≈ˡ (identity (G ∘F F))))) ⟩
-            ηm (F₀ F X) ∘ FF.F₁ (λ x → C.id ∘ ggfx)
+            ηm (F₀ F X) ∘ FF.F₁ (λ x → id ∘ ggfx)
               ≈⟨ ∘-resp-≈ʳ (F-resp-≈ FF (λ x → strict identityˡ)) ⟩
             ηm (F₀ F X) ∘ FF.F₁ (λ _ → ggfx)
               ≈⟨ ∘-resp-≈ʳ (F-resp-≈ FF (λ t → strict (h-sym identityʳ))) ⟩
-            ηm (F₀ F X) ∘ FF.F₁ (λ t → ggfx ∘ C.id)
+            ηm (F₀ F X) ∘ FF.F₁ (λ t → ggfx ∘ id)
               ≈⟨ ∘-resp-≈ʳ (F-resp-≈ FF (λ t → strict (∘-resp-≈ʳ (h-sym (identity FF))))) ⟩
             ηm (F₀ F X) ∘ FF.F₁ (λ t → ggfx ∘ FF.F₁ (λ _ → t))
               ≈⟨ ∘-resp-≈ʳ 
@@ -576,7 +594,7 @@ record CoEndoYonedaEquivalence
               ≈⟨ h-sym assoc ⟩
             (ηm (F₀ F X) ∘ ηu (F₀ GEFF (F₀ F X))) ∘ ggfx
               ≈⟨ ∘-resp-≈ˡ monad-idˡ ⟩
-            C.id ∘ ggfx
+            id ∘ ggfx
               ≈⟨ identityˡ ⟩
             ggfx
             ∎
@@ -586,16 +604,16 @@ record CoEndoYonedaEquivalence
             nt-eq (λ Y → strict (begin
               ggfx2τx-η (τx2ggfx τ) Y
                 ≈⟨ h-refl ⟩
-              ηm (F₀ F Y) ∘ FF.F₁ (λ f → F₁ (G ∘F F) f ∘ (η τ X ∘ FF.F₁ (λ _ → C.id)))
+              ηm (F₀ F Y) ∘ FF.F₁ (λ f → F₁ (G ∘F F) f ∘ (η τ X ∘ FF.F₁ (λ _ → id)))
                 ≈⟨ ∘-resp-≈ʳ (F-resp-≈ FF (λ f → strict (h-sym assoc))) ⟩
-              ηm (F₀ F Y) ∘ FF.F₁ (λ f → (F₁ (G ∘F F) f ∘ η τ X) ∘ FF.F₁ (λ _ → C.id))
+              ηm (F₀ F Y) ∘ FF.F₁ (λ f → (F₁ (G ∘F F) f ∘ η τ X) ∘ FF.F₁ (λ _ → id))
                 ≈⟨ ∘-resp-≈ʳ (F-resp-≈ FF (λ f → strict (∘-resp-≈ˡ (h-sym (commute τ f))))) ⟩
-              ηm (F₀ F Y) ∘ FF.F₁ (λ f → (η τ Y ∘ F₁ (CYEF X) f) ∘ FF.F₁ (λ _ → C.id))
+              ηm (F₀ F Y) ∘ FF.F₁ (λ f → (η τ Y ∘ F₁ (CYEF X) f) ∘ FF.F₁ (λ _ → id))
                 ≈⟨ ∘-resp-≈ʳ (F-resp-≈ FF (λ f → strict assoc)) ⟩
-              ηm (F₀ F Y) ∘ FF.F₁ (λ f → η τ Y ∘ (F₁ (CYEF X) f ∘ FF.F₁ (λ _ → C.id)))
+              ηm (F₀ F Y) ∘ FF.F₁ (λ f → η τ Y ∘ (F₁ (CYEF X) f ∘ FF.F₁ (λ _ → id)))
                 ≈⟨ ∘-resp-≈ʳ 
                     (F-resp-≈ FF (λ f → strict (∘-resp-≈ʳ (h-sym (homomorphism FF))))) ⟩
-              ηm (F₀ F Y) ∘ FF.F₁ (λ f → η τ Y ∘ FF.F₁ (λ x → f ∘ C.id))
+              ηm (F₀ F Y) ∘ FF.F₁ (λ f → η τ Y ∘ FF.F₁ (λ x → f ∘ id))
                 ≈⟨ ∘-resp-≈ʳ 
                     (F-resp-≈ FF (λ f → strict (∘-resp-≈ʳ
                       (F-resp-≈ FF (λ x → strict identityʳ))))) ⟩
@@ -614,7 +632,7 @@ record CoEndoYonedaEquivalence
                 ≈⟨ h-sym assoc ⟩
               (ηm (F₀ F Y) ∘ ηu (F₀ GEFF (F₀ F Y))) ∘ η τ Y
                 ≈⟨ ∘-resp-≈ˡ monad-idˡ ⟩
-              C.id ∘ η τ Y
+              id ∘ η τ Y
                 ≈⟨ identityˡ ⟩
               η τ Y
               ∎
@@ -633,8 +651,8 @@ there any other interesting categories satisfying those requirements?
 It turns out is hard to find any.
 
 In fact, in the setting of morphisms being monad-valued functions, a.k.a. Kleisli functions, it is
-impossible to find any categories because the requirements of `BasicFunctionalCategory` imply
-pureness.
+impossible to find any categories because the requirements of `BasicFunctionalCategory` are
+equivalent with pureness of the monad involved.
 
 ## The purity theorem
 
@@ -643,8 +661,7 @@ We need `Monad`, `Kleisli` and also some `TripleNotation`
 ```agda
 open import Categories.Monad using (Monad)
 
-open import Categories.Category.Construction.Kleisli 
-  using (Kleisli; module TripleNotation)
+open import Categories.Category.Construction.Kleisli using (Kleisli; module TripleNotation)
 ```
 
 So let us start
@@ -672,48 +689,48 @@ Again we define some convenient abbreviations
   MF₀ : SetsObj → SetsObj
   MF₀ X = F₀ (Monad.F M) X
 
-  mPure : {X : SetsObj} → X → MF₀ X
-  mPure {X} = η (Monad.η M) X
+  pure : {X : SetsObj} → X → MF₀ X
+  pure {X} = η (Monad.η M) X
 
-  mMap : {X Y : SetsObj} → (X → Y) → (MF₀ X → MF₀ Y)
-  mMap = F₁ (Monad.F M)
+  map : {X Y : SetsObj} → (X → Y) → (MF₀ X → MF₀ Y)
+  map = F₁ (Monad.F M)
 
-  mApply : {X Y : SetsObj} → (X → MF₀ Y) → (MF₀ X → MF₀ Y)
-  mApply f x = (f *) x
+  apply : {X Y : SetsObj} → (X → MF₀ Y) → (MF₀ X → MF₀ Y)
+  apply f x = (f *) x
 ```
 
 First we define Kleisli functor, `KF`, mapping functions to pure Kleisli functions.
 
+Note that for `KF` `F₀` is definitionally the identity on objects.
+
 Next we use `KF` to define the `Kleisli M` `BasicFunctionalCategory` instance.
 
-Next we define `mPure-mMap-eq`, a specific instance of the Kleisli `Hom` reasoning law `sym *⇒F₁`
+Next we define `pure-map-eq`, a specific instance of the Kleisli `Hom` reasoning law `sym *⇒F₁`
 
 ```agda
   KF : Functor (Sets ℓ) (Kleisli M)
   KF = record
     { F₀ = λ X → X
-    ; F₁ = (mPure •_)
-    ; identity = λ x → refl
-    ; homomorphism = λ {X Y Z f g} x → sym (*-identityʳ {k = mPure • g} (f x))
-    ; F-resp-≈ = λ f≈g x → cong mPure (f≈g x)
+    ; F₁ = (pure •_)
+    ; identity = λ _ → refl
+    ; homomorphism = λ {X Y Z f g} x → sym (*-identityʳ {k = pure • g} (f x))
+    ; F-resp-≈ = λ f≈g x → cong pure (f≈g x)
     }
 
   KleisliBasicFunctionalCategory : Set (suc ℓ)
   KleisliBasicFunctionalCategory = BasicFunctionalCategory (Kleisli M) KF
 
-  mPure-mMap-eq : ∀ {X} (mx : MF₀ X) → mMap mPure mx ≡ mApply (mPure • mPure) mx
-  mPure-mMap-eq {X} mx = sym (*⇒F₁ {X = X} {Y = MF₀ X} {f = mPure} mx)
+  pure-map-eq : ∀ {X} (mx : MF₀ X) → map pure mx ≡ apply (pure • pure) mx
+  pure-map-eq {X} mx = sym (*⇒F₁ {X = X} {Y = MF₀ X} {f = pure} mx)
 ```
 
 ### Advanced Equality Mechanics
 
 To prove that the records in our purity theorems are equal, we will need some advanced equality
-tools. Specifically, we need heterogeneous equality `_≅_` (to equate things living in different
-types) and implicit function extensionality `funextI` (to prove equality of functions with implicit
-arguments).
+tools. Specifically, we need implicit function extensionality `funextI` to prove equality of
+functions with implicit arguments.
 
 ```agda
-  open import Relation.Binary.HeterogeneousEquality using (_≅_)
   open import Axiom.Extensionality.Propositional using (implicit-extensionality)
 
   funextI : ∀ {a b} → Axiom.Extensionality.Propositional.ExtensionalityImplicit a b
@@ -729,7 +746,7 @@ all.
 ```agda
   record Idempotent : Set (suc ℓ) where
     field
-      idempotent : {X : SetsObj} (mx : MF₀ X) → mMap mPure mx ≡ mPure mx
+      idempotent : {X : SetsObj} (mx : MF₀ X) → map pure mx ≡ pure mx
 
   open Idempotent
 ```
@@ -740,6 +757,7 @@ equivalent.
 > [!WARNING]
 > **Hom-reasoning (`≈`) vs Equational Reasoning (`≡`)**
 > 
+
 As you read the following proofs, pay close attention to the difference between `≈` and `≡`. 
 
 In a Kleisli category, `f ≈ g` represents pointwise equality (`∀ x → f x ≡ g x`). 
@@ -751,52 +769,88 @@ However, to prove that two records are equal, their fields must be propositional
 Proving that `f ≡ g` requires equational reasoning and often invokes function extensionality
 (`funext`).
 
-Copy-pasting proofs from hom-reasoning into equational reasoning blocks will cause frustrating type
-errors because the symbols look almost identical but have entirely different semantic requirements!
-
 Anyway, note that we are, essentially, back to equational reasoning.
 
 Note that the code is work in progress and some of the `trans` usages are likely to be replaced by
 equational reasoning `begin ... ∎` code.
  
-`BasicFunctionalCategory` is a dependent `record`. The type of the `nu` field  depends on the
-`strict` field, making standard propositional equality `≡` impossible to state directly.
+`BasicFunctionalCategory` is a dependent `record`. The type of the `nu` field depends on the
+`strict` field. To prove equality of two such records, we must prove their fields are
+propositionally equal, but standard propositional equality `≡` cannot be used directly for `nu`
+without accounting for the dependency.
 
-We `postulate` the structural assembly of the  dependent record using heterogeneous equality `≅` to
-bypass the boilerplate.
+Instead of relying on heterogeneous equality (`≅`), we lift the dependent type out into
+`CYF-helper` and `GEFF-helper` parameterized by `StrictType`. This allows us to use standard
+type substitution (`subst`) to explicitly map the `nu` field along the equality of the `strict`
+fields.
 
 The `strict` field is uniquely determined by uniqueness of identity proofs `uip` and function
-extensionality, so any two instances are propositionally equal.
+extensionality, so any two instances are propositionally equal. We `postulate` this uniqueness as
+`kbfc_strict-eq` for `KleisliBasicFunctionalCategory`. 
 
-The `nu` field is uniquely determined by the categorical structures involved.
-We `postulate` this heterogeneous equality as the structural uniqueness principle.
+The `nu` field is similarly uniquely determined by the categorical structures involved.
+We `postulate` this uniqueness as `nu-eq` using standard propositional equality and `subst`.
+
+We also need substitutivity, `subst`.
 
 ```agda
-  postulate
-    bfc-eq : 
-      (a b : KleisliBasicFunctionalCategory)
-        → (λ {X Y f g} → BasicFunctionalCategory.strict a {X} {Y} {f} {g}) ≡ 
-            (λ {X Y f g} → BasicFunctionalCategory.strict b {X} {Y} {f} {g})
-        → BasicFunctionalCategory.nu a ≅ BasicFunctionalCategory.nu b
-          → a ≡ b
+  open import Relation.Binary.PropositionalEquality using (subst)
+  open Category
 
+  open BasicFunctionalCategory
+```
+
+```agda
   uip : ∀ {a} {A : Set a} {x y : A} (p q : x ≡ y) → p ≡ q
   uip refl refl = refl
 
-  postulate
-    strict-eq : 
-      (a b : KleisliBasicFunctionalCategory) → 
-        (λ {X Y f g} → BasicFunctionalCategory.strict a {X} {Y} {f} {g}) ≡ 
-          (λ {X Y f g} → BasicFunctionalCategory.strict b {X} {Y} {f} {g})
+  _≈K_ = _≈_ (Kleisli M)
 
-    nu-heq : 
+  _∘K_ = _∘_ (Kleisli M)
+
+
+  StrictType = 
+    ∀ {X Y} {f g : X → MF₀ Y} → f ≈K g → f ≡ g
+
+  CYF-helper : StrictType → Obj (Kleisli M) → Functor (Kleisli M) (Sets ℓ)
+  CYF-helper s X = record
+    { F₀ = λ Y → X → MF₀ Y
+    ; F₁ = λ f g → f ∘K g
+    ; identity = λ {Y} g → s (identityˡ (Kleisli M))
+    ; homomorphism = λ {Y Z W f h} g → s (assoc (Kleisli M))
+    ; F-resp-≈ = λ {Y} {Z} {f} {h} f≈h g → s (Category.∘-resp-≈ˡ (Kleisli M) f≈h)
+    }
+
+  GEFF-helper : StrictType → Functor (Kleisli M) (Kleisli M)
+  GEFF-helper s = KF ∘F (CYF-helper s (F₀ KF (Lift ℓ ⊤)))
+
+  kbfc-eq  : (a b : KleisliBasicFunctionalCategory)
+      → (p : (λ {X Y f g} → strict a {X} {Y} {f} {g}) ≡ (λ {X Y f g} → strict b {X} {Y} {f} {g}))
+      → subst (λ (s : StrictType) →  NaturalTransformation idF (GEFF-helper s)) p (nu a) ≡ nu b
+      → a ≡ b
+  kbfc-eq  
+    record { strict = s1 ; nu = n1 ; nu-eq-T = e1 } 
+      record { strict = .s1 ; nu = .n1 ; nu-eq-T = e2 } refl refl = 
+        cong (λ e → record { strict = s1 ; nu = n1 ; nu-eq-T = e }) (uip e1 e2)
+
+  postulate
+    kbfc_strict-eq : 
       (a b : KleisliBasicFunctionalCategory) → 
-        BasicFunctionalCategory.nu a ≅ BasicFunctionalCategory.nu b
+        (λ {X Y f g} → strict a {X} {Y} {f} {g}) ≡ 
+          (λ {X Y f g} → strict b {X} {Y} {f} {g})
+
+    kbfc_nu-eq : 
+      (a b : KleisliBasicFunctionalCategory) 
+      → (p : (λ {X Y f g} → strict a {X} {Y} {f} {g}) ≡ 
+          (λ {X Y f g} → strict b {X} {Y} {f} {g}))
+      → subst (λ (s : StrictType) → 
+          NaturalTransformation idF (GEFF-helper s)) p (nu a) ≡ nu b
 
   kleisli-basic-functional-category-eq-prop : ∀ {a b : KleisliBasicFunctionalCategory} → a ≡ b
-  kleisli-basic-functional-category-eq-prop {a} {b} = bfc-eq a b (strict-eq a b) (nu-heq a b)
+  kleisli-basic-functional-category-eq-prop {a} {b} = 
+    kbfc-eq  a b (kbfc_strict-eq a b) (kbfc_nu-eq a b (kbfc_strict-eq a b))
 
-  mkIdempotent : (p : {X : SetsObj} (mx : MF₀ X) → mMap mPure mx ≡ mPure mx) → Idempotent
+  mkIdempotent : (p : {X : SetsObj} (mx : MF₀ X) → map pure mx ≡ pure mx) → Idempotent
   mkIdempotent p = record { idempotent = p }
 
   idempotent-eq : 
@@ -824,7 +878,7 @@ We `postulate` this heterogeneous equality as the structural uniqueness principl
               
               sigma-eval-lemma : 
                 ∀ {Z : SetsObj} (mz : MF₀ Z) →
-                  mApply {Z} {T → MF₀ Z} (η (nu kbfc) Z) mz ≡ mPure (λ _ → mz)
+                  apply {Z} {T → MF₀ Z} (η (nu kbfc) Z) mz ≡ pure (λ _ → mz)
               sigma-eval-lemma {Z} mz =
                 let
                   MZ = MF₀ Z
@@ -837,110 +891,110 @@ We `postulate` this heterogeneous equality as the structural uniqueness principl
                   nat-at-t = sym (commute (nu kbfc) gmz t)
 
                   left-eq : 
-                     (F₁ (GEFF kbfc) gmz ∘K η (nu kbfc) T) t ≡ mPure gmz
+                     (F₁ (GEFF kbfc) gmz ∘K η (nu kbfc) T) t ≡ pure gmz
                   left-eq = 
                     begin
-                      mApply (F₁ (GEFF kbfc) gmz) (η (nu kbfc) T t)
+                      apply (F₁ (GEFF kbfc) gmz) (η (nu kbfc) T t)
                         ≡⟨ cong (λ k → 
-                            mApply (F₁ (GEFF kbfc) gmz) k) (cong (λ k → k t) (nu-eq-T kbfc)) ⟩
-                      mApply (F₁ (GEFF kbfc) gmz) (mPure (λ _ → mPure t))
-                        ≡⟨ *-identityʳ {k = F₁ (GEFF kbfc) gmz} (λ _ → mPure t) ⟩
-                      F₁ (GEFF kbfc) gmz (λ _ → mPure t)
+                            apply (F₁ (GEFF kbfc) gmz) k) (cong (λ k → k t) (nu-eq-T kbfc)) ⟩
+                      apply (F₁ (GEFF kbfc) gmz) (pure (λ _ → pure t))
+                        ≡⟨ *-identityʳ {k = F₁ (GEFF kbfc) gmz} (λ _ → pure t) ⟩
+                      F₁ (GEFF kbfc) gmz (λ _ → pure t)
                         ≡⟨ refl ⟩
-                      mPure (λ _ → mApply gmz (mPure t))
-                        ≡⟨ cong (λ k → mPure (λ _ → k)) (*-identityʳ {k = gmz} t) ⟩
-                      mPure (λ _ → gmz t)
+                      pure (λ _ → apply gmz (pure t))
+                        ≡⟨ cong (λ k → pure (λ _ → k)) (*-identityʳ {k = gmz} t) ⟩
+                      pure (λ _ → gmz t)
                         ≡⟨ refl ⟩
-                      mPure gmz
+                      pure gmz
                     ∎
                   right-eq : 
-                     (η (nu kbfc) Z ∘K gmz) t ≡ mApply (η (nu kbfc) Z) mz
+                     (η (nu kbfc) Z ∘K gmz) t ≡ apply (η (nu kbfc) Z) mz
                   right-eq = refl
 
                 in trans (sym right-eq) (trans (sym nat-at-t) left-eq)
         
-              eval = λ (mgmx : MGMX) → mApply (λ gmx → mPure (gmx t)) mgmx
+              eval = λ (mgmx : MGMX) → apply (λ gmx → pure (gmx t)) mgmx
               
-              step1 : eval (mApply (η (nu kbfc) X) mx) ≡ eval (mPure gmx)
+              step1 : eval (apply (η (nu kbfc) X) mx) ≡ eval (pure gmx)
               step1 = cong eval (sigma-eval-lemma mx)
               
-              step2 : eval (mPure gmx) ≡ mPure mx
-              step2 = *-identityʳ {k = λ g → mPure (g t)} gmx
+              step2 : eval (pure gmx) ≡ pure mx
+              step2 = *-identityʳ {k = λ g → pure (g t)} gmx
               
-              step3 : eval (mApply (η (nu kbfc) X) mx) ≡ mApply (mPure • mPure) mx
+              step3 : eval (apply (η (nu kbfc) X) mx) ≡ apply (pure • pure) mx
               step3 = begin
-                mApply (λ g → mPure (g t)) (mApply (η (nu kbfc) X) mx)
+                apply (λ g → pure (g t)) (apply (η (nu kbfc) X) mx)
                   ≡⟨ sym 
-                      (*-assoc {k = η (nu kbfc) X} {l = λ g → mPure (g t)} mx) ⟩
-                mApply (λ x → mApply (λ g → mPure (g t)) (η (nu kbfc) X x)) mx
-                  ≡⟨ cong (λ k → mApply k mx) (funext (λ x → 
+                      (*-assoc {k = η (nu kbfc) X} {l = λ g → pure (g t)} mx) ⟩
+                apply (λ x → apply (λ g → pure (g t)) (η (nu kbfc) X x)) mx
+                  ≡⟨ cong (λ k → apply k mx) (funext (λ x → 
                        let
-                         inner = sigma-eval-lemma (mPure x)
+                         inner = sigma-eval-lemma (pure x)
                          inner-eval :
-                          eval (mApply (η (nu kbfc) X) (mPure x)) ≡ 
-                            eval (mPure (λ _ → mPure x))
+                          eval (apply (η (nu kbfc) X) (pure x)) ≡ 
+                            eval (pure (λ _ → pure x))
                          inner-eval = cong eval inner
-                         inner-eval2 : eval (mPure (λ _ → mPure x)) ≡ mPure (mPure x)
-                         inner-eval2 = *-identityʳ {k = λ g → mPure (g t)} (λ _ → mPure x)
+                         inner-eval2 : eval (pure (λ _ → pure x)) ≡ pure (pure x)
+                         inner-eval2 = *-identityʳ {k = λ g → pure (g t)} (λ _ → pure x)
                          inner-eval3 :
-                           eval (mApply (η (nu kbfc) X) (mPure x)) ≡ eval (η (nu kbfc) X x)
+                           eval (apply (η (nu kbfc) X) (pure x)) ≡ eval (η (nu kbfc) X x)
                          inner-eval3 = cong eval (*-identityʳ {k = η (nu kbfc) X} x)
                        in trans (sym inner-eval3) (trans inner-eval inner-eval2)
                      )) ⟩
-                mApply (λ x → mPure (mPure x)) mx
+                apply (λ x → pure (pure x)) mx
                   ∎
-            in trans (mPure-mMap-eq mx) (trans (sym step3) (trans step1 step2))
+            in trans (pure-map-eq mx) (trans (sym step3) (trans step1 step2))
         }
     ; from = λ i → 
         let
           T = Lift ℓ ⊤
 
-          nu-mApply-lemma : 
-            ∀ {Z} (mz : MF₀ Z) → mApply (λ z → mPure {T → MF₀ Z} (λ _ → mPure z)) mz ≡ 
-              mPure {T → MF₀ Z} (λ _ → mz)
-          nu-mApply-lemma {Z} mz = 
+          nu-apply-lemma : 
+            ∀ {Z} (mz : MF₀ Z) → apply (λ z → pure {T → MF₀ Z} (λ _ → pure z)) mz ≡ 
+              pure {T → MF₀ Z} (λ _ → mz)
+          nu-apply-lemma {Z} mz = 
             let 
               MZ = MF₀ Z
               GMZ = T → MZ            
               gmz = λ (_ : T) → mz
               MGMZ = MF₀ GMZ
-              mz2mgmz = λ (mz : MZ) → mPure {GMZ} (λ _ → mz)
+              mz2mgmz = λ (mz : MZ) → pure {GMZ} (λ _ → mz)
             in begin
-              mApply (λ z → mPure (λ _ → mPure z)) mz
-                ≡⟨ sym (cong (λ k → mApply k mz) (funext (λ (z : Z) → 
-                      *-identityʳ {k = mz2mgmz} (mPure z)))) ⟩
-              mApply (λ z → mApply mz2mgmz (mPure {MZ} (mPure z))) mz
-                ≡⟨ *-assoc {k = λ z → mPure (mPure z)} {l = mz2mgmz} mz ⟩
-              mApply mz2mgmz (mApply (λ z → mPure (mPure z)) mz)
+              apply (λ z → pure (λ _ → pure z)) mz
+                ≡⟨ sym (cong (λ k → apply k mz) (funext (λ (z : Z) → 
+                      *-identityʳ {k = mz2mgmz} (pure z)))) ⟩
+              apply (λ z → apply mz2mgmz (pure {MZ} (pure z))) mz
+                ≡⟨ *-assoc {k = λ z → pure (pure z)} {l = mz2mgmz} mz ⟩
+              apply mz2mgmz (apply (λ z → pure (pure z)) mz)
                 ≡⟨ cong 
-                    (λ mz → mApply mz2mgmz mz) 
-                      (trans (sym (mPure-mMap-eq mz)) (idempotent i mz)) ⟩
-              mApply mz2mgmz (mPure mz)
+                    (λ mz → apply mz2mgmz mz) 
+                      (trans (sym (pure-map-eq mz)) (idempotent i mz)) ⟩
+              apply mz2mgmz (pure mz)
                 ≡⟨ *-identityʳ {k = mz2mgmz} mz ⟩
-              mPure gmz
+              pure gmz
                 ∎
           
           comm : ∀ {X} {Y} (gmx2mx : X → MF₀ Y) (x : X) → 
-            mApply (λ z → mPure {T → MF₀ Y} (λ _ → mPure {Y} z)) (gmx2mx x) ≡ 
-              mApply (mPure • (λ g t → mApply gmx2mx (g t))) 
-                (mPure {T → MF₀ X} (λ _ → mPure {X} x))
+            apply (λ z → pure {T → MF₀ Y} (λ _ → pure {Y} z)) (gmx2mx x) ≡ 
+              apply (pure • (λ g t → apply gmx2mx (g t))) 
+                (pure {T → MF₀ X} (λ _ → pure {X} x))
           comm {X} {Y} gmx2mx x = 
                  let 
                    comm-lhs : 
-                    mApply (mPure • (λ g u → mApply gmx2mx (g u))) (mPure (λ _ → mPure x)) ≡
-                      mPure (λ _ → gmx2mx x)
+                    apply (pure • (λ g u → apply gmx2mx (g u))) (pure (λ _ → pure x)) ≡
+                      pure (λ _ → gmx2mx x)
                    comm-lhs = begin
-                     mApply (mPure • (λ g u → mApply gmx2mx (g u))) (mPure (λ _ → mPure x))
-                       ≡⟨ *-identityʳ {k = mPure • (λ g u → mApply gmx2mx (g u))} (λ _ → mPure x) ⟩
-                     mPure (λ u → mApply gmx2mx (mPure x))
-                       ≡⟨ cong (λ k → mPure (λ _ → k)) (*-identityʳ {k = gmx2mx} x) ⟩
-                     mPure (λ _ → gmx2mx x)
+                     apply (pure • (λ g u → apply gmx2mx (g u))) (pure (λ _ → pure x))
+                       ≡⟨ *-identityʳ {k = pure • (λ g u → apply gmx2mx (g u))} (λ _ → pure x) ⟩
+                     pure (λ u → apply gmx2mx (pure x))
+                       ≡⟨ cong (λ k → pure (λ _ → k)) (*-identityʳ {k = gmx2mx} x) ⟩
+                     pure (λ _ → gmx2mx x)
                        ∎
-                 in sym (trans comm-lhs (sym (nu-mApply-lemma (gmx2mx x))))
+                 in sym (trans comm-lhs (sym (nu-apply-lemma (gmx2mx x))))
         in
         record { strict = λ f≈g → funext f≈g
                ; nu = record 
-                  { η = λ X x → mPure {T → MF₀ X} (λ _ → mPure {X} x)
+                  { η = λ X x → pure {T → MF₀ X} (λ _ → pure {X} x)
                   ; commute = comm
                   ; sym-commute = λ f x → sym (comm f x)
                   } 
@@ -956,12 +1010,12 @@ We now define `EnforcingPurity` which is equivalent with `Idempotent`.
 ```agda
   record EnforcingPurity : Set (suc ℓ) where
     field
-      enforcingPurity : {X : SetsObj} (mx : MF₀ X) → mApply (mPure • mPure) mx ≡ mPure mx
+      enforcingPurity : {X : SetsObj} (mx : MF₀ X) → apply (pure • pure) mx ≡ pure mx
 
   open EnforcingPurity
 
   mkEnforcingPurity : 
-    (p : {X : SetsObj} (mx : MF₀ X) → mApply (mPure • mPure) mx ≡ mPure mx) → EnforcingPurity
+    (p : {X : SetsObj} (mx : MF₀ X) → apply (pure • pure) mx ≡ pure mx) → EnforcingPurity
   mkEnforcingPurity p = record { enforcingPurity = p }
 
   enforcing-purity-eq : 
@@ -981,22 +1035,22 @@ We now define `EnforcingPurity` which is equivalent with `Idempotent`.
         to = λ i → record
           { enforcingPurity = λ mx → 
               begin
-                mApply (mPure • mPure) mx
-                  ≡⟨ sym (mPure-mMap-eq mx) ⟩
-                mMap mPure mx
+                apply (pure • pure) mx
+                  ≡⟨ sym (pure-map-eq mx) ⟩
+                map pure mx
                   ≡⟨ idempotent i mx ⟩
-                mPure mx
+                pure mx
               ∎
           }
 
       ; from = λ ep → record
             { idempotent = λ mx →
                 begin
-                  mMap mPure mx
-                    ≡⟨ mPure-mMap-eq mx ⟩
-                  mApply (mPure • mPure) mx
+                  map pure mx
+                    ≡⟨ pure-map-eq mx ⟩
+                  apply (pure • pure) mx
                     ≡⟨ enforcingPurity ep mx ⟩
-                  mPure mx
+                  pure mx
                 ∎
             }
       ; to_from = funext (λ ep → enforcing-purity-eq-prop)
@@ -1015,34 +1069,34 @@ The main result is encoded in `enforcing-purity-implies-pure-unit-eq`.
 
 ```agda
   enforcing-purity-implies-pure-unit-eq : 
-    EnforcingPurity → (mt : MF₀ (Lift ℓ ⊤)) → mt ≡ mPure (lift tt)
+    EnforcingPurity → (mt : MF₀ (Lift ℓ ⊤)) → mt ≡ pure (lift tt)
   enforcing-purity-implies-pure-unit-eq ep mt =
     let 
       T = Lift ℓ ⊤
       t = lift tt
       MT = MF₀ T
       MMT = MF₀ (MT)      
-      μT = mApply {MT} {T} (λ _ → mPure {T} t)
+      μT = apply {MT} {T} (λ _ → pure {T} t)
           
       lhs-inner : 
-        ∀ x → mApply {MT} {T} (λ _ → mPure t) (mPure (mPure x)) ≡ mPure t
+        ∀ x → apply {MT} {T} (λ _ → pure t) (pure (pure x)) ≡ pure t
       lhs-inner x = 
-        *-identityʳ {x = MT} {y = T} {k = λ _ → mPure t} (mPure {T} x)
+        *-identityʳ {x = MT} {y = T} {k = λ _ → pure t} (pure {T} x)
       
       ⊤-is-singleton : (a b : T) → a ≡ b
       ⊤-is-singleton t t = refl
       
-      lhs-eq : μT (mApply (mPure • mPure) mt) ≡ mt
+      lhs-eq : μT (apply (pure • pure) mt) ≡ mt
       lhs-eq = 
         trans (*-sym-assoc {x = T} {y = MT} {z = T}
-          {k = λ x → mPure (mPure x)} {l = λ _ → mPure t} mt) 
-            (trans (cong (λ f → mApply f mt) (funext lhs-inner)) 
-              (trans (cong (λ f → mApply f mt) (funext (λ (x : T) →
-                cong mPure (⊤-is-singleton t x)))) (*-identityˡ {T} mt)))
+          {k = λ x → pure (pure x)} {l = λ _ → pure t} mt) 
+            (trans (cong (λ f → apply f mt) (funext lhs-inner)) 
+              (trans (cong (λ f → apply f mt) (funext (λ (x : T) →
+                cong pure (⊤-is-singleton t x)))) (*-identityˡ {T} mt)))
       
     in trans (sym lhs-eq) 
         (trans (cong μT (enforcingPurity ep mt)) 
-           (*-identityʳ {x = MT} {y = T} {k = λ _ → mPure t} mt))
+           (*-identityʳ {x = MT} {y = T} {k = λ _ → pure t} mt))
 ```
 
 Purity boils down to `MF₀ (Lift ℓ ⊤)` being a `Singleton` which is the same as `MF₀` being a
