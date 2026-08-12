@@ -212,7 +212,7 @@ We need `Category` now.
 open import Categories.Category.Core using (Category)
 ```
 
-We also need transitivity, `trans`, and congruence `cong` now.
+We also need transitivity, `trans`, and congruence, `cong`, now.
 
 ```agda
 open import Relation.Binary.PropositionalEquality using (trans; cong)
