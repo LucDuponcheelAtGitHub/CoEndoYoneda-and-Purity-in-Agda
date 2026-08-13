@@ -83,7 +83,7 @@ elements of `fst (F-ob F X)`.
 
 This equivalence is the foundation of studying sets `X` by studying all functions `X → Y` to sets
 `Y`. In Cubical Agda, equality of natural transformations follows directly from function
-extensionality and paths, without needing extra `postulate`s.
+extensionality and paths, without needing extra postulates.
 
 ```agda
   module StandardEquivalence 
