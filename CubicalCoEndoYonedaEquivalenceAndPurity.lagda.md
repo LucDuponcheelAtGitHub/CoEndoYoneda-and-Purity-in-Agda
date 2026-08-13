@@ -267,59 +267,59 @@ record CoEndoYonedaEquivalence
       module GG = Functor GG
 
     τx2ggfx : NatTrans (CYEF X) (G ∘F F) → fst (GG.F-ob (F.F-ob X))
-    τx2ggfx τx = C._⋆_ (FF.F-hom (λ _ → C.id)) (N-ob τx X)
+    τx2ggfx τx = _⋆_ (FF.F-hom (λ _ → C.id)) (N-ob τx X)
 
     ggfx2τx-η : fst (GG.F-ob (F.F-ob X)) → ∀ Y → C.Hom[ CYEF.F-ob Y , G.F-ob (F.F-ob Y) ]
-    ggfx2τx-η ggfx Y = C._⋆_ (FF.F-hom (λ f → C._⋆_ ggfx (G.F-hom (F.F-hom f)))) (ηm (F.F-ob Y))
+    ggfx2τx-η ggfx Y = _⋆_ (FF.F-hom (λ f → _⋆_ ggfx (G.F-hom (F.F-hom f)))) (ηm (F.F-ob Y))
 
     ggfx2τx-commute : 
       ∀ (ggfx : fst (GG.F-ob (F.F-ob X))) {Y Z : C.ob} (f : C.Hom[ Y , Z ]) → 
-        C._⋆_ (CYEF.F-hom f) (ggfx2τx-η ggfx Z) ≡ C._⋆_ (ggfx2τx-η ggfx Y) (G.F-hom (F.F-hom f))
+        _⋆_ (CYEF.F-hom f) (ggfx2τx-η ggfx Z) ≡ _⋆_ (ggfx2τx-η ggfx Y) (G.F-hom (F.F-hom f))
     ggfx2τx-commute ggfx {Y} {Z} f =
       let
         A = CYEF.F-hom f
-        B_Z = FF.F-hom (λ g → C._⋆_ ggfx (G.F-hom (F.F-hom g)))
-        B_Y = FF.F-hom (λ g → C._⋆_ ggfx (G.F-hom (F.F-hom g)))
-        C_f = FF.F-hom (λ u → C._⋆_ u (G.F-hom (F.F-hom f)))
+        B_Z = FF.F-hom (λ g → _⋆_ ggfx (G.F-hom (F.F-hom g)))
+        B_Y = FF.F-hom (λ g → _⋆_ ggfx (G.F-hom (F.F-hom g)))
+        C_f = FF.F-hom (λ u → _⋆_ u (G.F-hom (F.F-hom f)))
         
-        step1 : C._⋆_ A (C._⋆_ B_Z (ηm (F.F-ob Z))) ≡ C._⋆_ (C._⋆_ A B_Z) (ηm (F.F-ob Z))
+        step1 : _⋆_ A (_⋆_ B_Z (ηm (F.F-ob Z))) ≡ _⋆_ (_⋆_ A B_Z) (ηm (F.F-ob Z))
         step1 = sym (C.⋆Assoc A B_Z (ηm (F.F-ob Z)))
         
-        step2 : C._⋆_ A B_Z ≡ FF.F-hom (λ g → C._⋆_ ggfx (G.F-hom (F.F-hom (C._⋆_ g f))))
-        step2 = sym (FF.F-seq (λ g → C._⋆_ g f) (λ h → C._⋆_ ggfx (G.F-hom (F.F-hom h))))
+        step2 : _⋆_ A B_Z ≡ FF.F-hom (λ g → _⋆_ ggfx (G.F-hom (F.F-hom (_⋆_ g f))))
+        step2 = sym (FF.F-seq (λ g → _⋆_ g f) (λ h → _⋆_ ggfx (G.F-hom (F.F-hom h))))
         
-        step3 : FF.F-hom (λ g → C._⋆_ ggfx (G.F-hom (F.F-hom (C._⋆_ g f)))) ≡ 
-                FF.F-hom (λ g → C._⋆_ (C._⋆_ ggfx (G.F-hom (F.F-hom g))) (G.F-hom (F.F-hom f)))
+        step3 : FF.F-hom (λ g → _⋆_ ggfx (G.F-hom (F.F-hom (_⋆_ g f)))) ≡ 
+                FF.F-hom (λ g → _⋆_ (_⋆_ ggfx (G.F-hom (F.F-hom g))) (G.F-hom (F.F-hom f)))
         step3 = cong FF.F-hom (funExt (λ g → 
                   let 
-                    inner1 : F.F-hom (C._⋆_ g f) ≡ C._⋆_ (F.F-hom g) (F.F-hom f)
+                    inner1 : F.F-hom (_⋆_ g f) ≡ _⋆_ (F.F-hom g) (F.F-hom f)
                     inner1 = F.F-seq g f
                     
-                    inner2 : G.F-hom (F.F-hom (C._⋆_ g f)) ≡ G.F-hom (C._⋆_ (F.F-hom g) (F.F-hom f))
+                    inner2 : G.F-hom (F.F-hom (_⋆_ g f)) ≡ G.F-hom (_⋆_ (F.F-hom g) (F.F-hom f))
                     inner2 = cong G.F-hom inner1
                     
-                    inner3 : G.F-hom (C._⋆_ (F.F-hom g) (F.F-hom f)) ≡ C._⋆_ (G.F-hom (F.F-hom g)) (G.F-hom (F.F-hom f))
+                    inner3 : G.F-hom (_⋆_ (F.F-hom g) (F.F-hom f)) ≡ _⋆_ (G.F-hom (F.F-hom g)) (G.F-hom (F.F-hom f))
                     inner3 = G.F-seq (F.F-hom g) (F.F-hom f)
                     
-                    inner4 : C._⋆_ ggfx (G.F-hom (F.F-hom (C._⋆_ g f))) ≡ C._⋆_ ggfx (C._⋆_ (G.F-hom (F.F-hom g)) (G.F-hom (F.F-hom f)))
-                    inner4 = cong (λ k → C._⋆_ ggfx k) (inner2 ∙ inner3)
+                    inner4 : _⋆_ ggfx (G.F-hom (F.F-hom (_⋆_ g f))) ≡ _⋆_ ggfx (_⋆_ (G.F-hom (F.F-hom g)) (G.F-hom (F.F-hom f)))
+                    inner4 = cong (λ k → _⋆_ ggfx k) (inner2 ∙ inner3)
                     
-                    inner5 : C._⋆_ ggfx (C._⋆_ (G.F-hom (F.F-hom g)) (G.F-hom (F.F-hom f))) ≡ C._⋆_ (C._⋆_ ggfx (G.F-hom (F.F-hom g))) (G.F-hom (F.F-hom f))
+                    inner5 : _⋆_ ggfx (_⋆_ (G.F-hom (F.F-hom g)) (G.F-hom (F.F-hom f))) ≡ _⋆_ (_⋆_ ggfx (G.F-hom (F.F-hom g))) (G.F-hom (F.F-hom f))
                     inner5 = sym (C.⋆Assoc ggfx (G.F-hom (F.F-hom g)) (G.F-hom (F.F-hom f)))
                   in inner4 ∙ inner5))
         
-        step4 : FF.F-hom (λ g → C._⋆_ (C._⋆_ ggfx (G.F-hom (F.F-hom g))) (G.F-hom (F.F-hom f))) ≡ C._⋆_ B_Y C_f
-        step4 = FF.F-seq (λ g → C._⋆_ ggfx (G.F-hom (F.F-hom g))) (λ u → C._⋆_ u (G.F-hom (F.F-hom f)))
+        step4 : FF.F-hom (λ g → _⋆_ (_⋆_ ggfx (G.F-hom (F.F-hom g))) (G.F-hom (F.F-hom f))) ≡ _⋆_ B_Y C_f
+        step4 = FF.F-seq (λ g → _⋆_ ggfx (G.F-hom (F.F-hom g))) (λ u → _⋆_ u (G.F-hom (F.F-hom f)))
         
-        step5 : C._⋆_ (C._⋆_ B_Y C_f) (ηm (F.F-ob Z)) ≡ C._⋆_ B_Y (C._⋆_ C_f (ηm (F.F-ob Z)))
+        step5 : _⋆_ (_⋆_ B_Y C_f) (ηm (F.F-ob Z)) ≡ _⋆_ B_Y (_⋆_ C_f (ηm (F.F-ob Z)))
         step5 = C.⋆Assoc B_Y C_f (ηm (F.F-ob Z))
         
-        step6 : C._⋆_ C_f (ηm (F.F-ob Z)) ≡ C._⋆_ (ηm (F.F-ob Y)) (G.F-hom (F.F-hom f))
+        step6 : _⋆_ C_f (ηm (F.F-ob Z)) ≡ _⋆_ (ηm (F.F-ob Y)) (G.F-hom (F.F-hom f))
         step6 = N-hom mu (F.F-hom f)
         
-        step7 : C._⋆_ B_Y (C._⋆_ (ηm (F.F-ob Y)) (G.F-hom (F.F-hom f))) ≡ C._⋆_ (C._⋆_ B_Y (ηm (F.F-ob Y))) (G.F-hom (F.F-hom f))
+        step7 : _⋆_ B_Y (_⋆_ (ηm (F.F-ob Y)) (G.F-hom (F.F-hom f))) ≡ _⋆_ (_⋆_ B_Y (ηm (F.F-ob Y))) (G.F-hom (F.F-hom f))
         step7 = sym (C.⋆Assoc B_Y (ηm (F.F-ob Y)) (G.F-hom (F.F-hom f)))
-      in step1 ∙ (cong (λ k → C._⋆_ k (ηm (F.F-ob Z))) (step2 ∙ (step3 ∙ step4)) ∙ (step5 ∙ (cong (λ k → C._⋆_ B_Y k) step6 ∙ step7)))
+      in step1 ∙ (cong (λ k → _⋆_ k (ηm (F.F-ob Z))) (step2 ∙ (step3 ∙ step4)) ∙ (step5 ∙ (cong (λ k → _⋆_ B_Y k) step6 ∙ step7)))
 
     ggfx2τx : fst (GG.F-ob (F.F-ob X)) → NatTrans (CYEF X) (G ∘F F)
     ggfx2τx ggfx = record
@@ -327,12 +327,123 @@ record CoEndoYonedaEquivalence
       ; N-hom = λ f → ggfx2τx-commute ggfx f
       }
 
+    to_from-proof : ∀ (ggfx : fst (GG.F-ob (F.F-ob X))) → τx2ggfx (ggfx2τx ggfx) ≡ ggfx
+    to_from-proof ggfx = 
+      let
+        A = FF.F-hom (λ _ → C.id)
+        B = FF.F-hom (λ f → ggfx ⋆ G.F-hom (F.F-hom f))
+        
+        step1 : (A ⋆ B) ⋆ ηm (F.F-ob X) ≡ τx2ggfx (ggfx2τx ggfx)
+        step1 = C.⋆Assoc A B (ηm (F.F-ob X))
+        
+        step2 : A ⋆ B ≡ FF.F-hom (λ x → ggfx ⋆ G.F-hom (F.F-hom C.id))
+        step2 = sym (FF.F-seq (λ _ → C.id) (λ f → ggfx ⋆ G.F-hom (F.F-hom f)))
+        
+        step3 : FF.F-hom (λ x → ggfx ⋆ G.F-hom (F.F-hom C.id)) ≡ FF.F-hom (λ _ → ggfx ⋆ C.id)
+        step3 = cong FF.F-hom (funExt (λ _ → cong (λ k → ggfx ⋆ G.F-hom k) F.F-id ∙ cong (λ k → ggfx ⋆ k) G.F-id))
+        
+        step4 : FF.F-hom (λ _ → ggfx ⋆ C.id) ≡ FF.F-hom (λ _ → ggfx)
+        step4 = cong FF.F-hom (funExt (λ _ → C.⋆IdR ggfx))
+        
+        step5 : FF.F-hom (λ _ → ggfx) ≡ FF.F-hom (λ t → C.id ⋆ ggfx)
+        step5 = cong FF.F-hom (funExt (λ _ → sym (C.⋆IdL ggfx)))
+        
+        step6 : FF.F-hom (λ t → C.id ⋆ ggfx) ≡ FF.F-hom (λ t → FF.F-hom (λ _ → t) ⋆ ggfx)
+        step6 = cong FF.F-hom (funExt (λ t → cong (λ k → k ⋆ ggfx) (sym (
+                  let 
+                    inner1 : (λ (_ : fst T) → t) ≡ (λ x → x)
+                    inner1 = funExt (λ x → refl)
+                    inner2 : FF.F-hom (λ _ → t) ≡ FF.F-hom (λ x → x)
+                    inner2 = cong FF.F-hom inner1
+                    inner3 : FF.F-hom (λ x → x) ≡ C.id
+                    inner3 = FF.F-id
+                  in inner2 ∙ inner3
+                ))))
+        
+        step7 : FF.F-hom (λ t → FF.F-hom (λ _ → t) ⋆ ggfx) ≡ FF.F-hom (λ t → FF.F-hom (λ _ → t)) ⋆ G.F-hom ggfx
+        step7 = FF.F-seq (λ t → FF.F-hom (λ _ → t)) (λ k → k ⋆ ggfx)
+        
+        step8 : (FF.F-hom (λ t → FF.F-hom (λ _ → t)) ⋆ G.F-hom ggfx) ⋆ ηm (F.F-ob X) ≡ 
+                FF.F-hom (λ t → FF.F-hom (λ _ → t)) ⋆ (G.F-hom ggfx ⋆ ηm (F.F-ob X))
+        step8 = C.⋆Assoc (FF.F-hom (λ t → FF.F-hom (λ _ → t))) (G.F-hom ggfx) (ηm (F.F-ob X))
+        
+        step9 : FF.F-hom (λ t → FF.F-hom (λ _ → t)) ≡ ηu FFT
+        step9 = sym nu-eq-T
+        
+        step10 : ηu FFT ⋆ (G.F-hom ggfx ⋆ ηm (F.F-ob X)) ≡ (ηu FFT ⋆ G.F-hom ggfx) ⋆ ηm (F.F-ob X)
+        step10 = sym (C.⋆Assoc (ηu FFT) (G.F-hom ggfx) (ηm (F.F-ob X)))
+        
+        step11 : ηu FFT ⋆ G.F-hom ggfx ≡ ggfx ⋆ ηu (G.F-ob (F.F-ob X))
+        step11 = sym (N-hom nu ggfx)
+        
+        step12 : (ggfx ⋆ ηu (G.F-ob (F.F-ob X))) ⋆ ηm (F.F-ob X) ≡ ggfx ⋆ (ηu (G.F-ob (F.F-ob X)) ⋆ ηm (F.F-ob X))
+        step12 = C.⋆Assoc ggfx (ηu (G.F-ob (F.F-ob X))) (ηm (F.F-ob X))
+        
+        step13 : ηu (G.F-ob (F.F-ob X)) ⋆ ηm (F.F-ob X) ≡ C.id
+        step13 = monad-idˡ
+        
+        step14 : ggfx ⋆ C.id ≡ ggfx
+        step14 = C.⋆IdR ggfx
+      in sym step1 ∙ (cong (λ k → k ⋆ ηm (F.F-ob X)) (step2 ∙ (step3 ∙ (step4 ∙ (step5 ∙ (step6 ∙ step7))))) ∙ (step8 ∙ (cong (λ k → k ⋆ (G.F-hom ggfx ⋆ ηm (F.F-ob X))) step9 ∙ (step10 ∙ (cong (λ k → k ⋆ ηm (F.F-ob X)) step11 ∙ (step12 ∙ (cong (λ k → ggfx ⋆ k) step13 ∙ step14)))))))
+
+    from_to-proof : ∀ (τx : NatTrans (CYEF X) (G ∘F F)) (Y : C.ob) → ggfx2τx-η (τx2ggfx τx) Y ≡ N-ob τx Y
+    from_to-proof τx Y = 
+      let
+        A : C.Hom[ FFT , CYEF.F-ob X ]
+        A = FF.F-hom (λ _ → C.id)
+        B : C.Hom[ CYEF.F-ob X , G.F-ob (F.F-ob X) ]
+        B = N-ob τx X
+        C_f : C.Hom[ X , Y ] → C.Hom[ G.F-ob (F.F-ob X) , G.F-ob (F.F-ob Y) ]
+        C_f = λ f → G.F-hom (F.F-hom f)
+        
+        step1 : FF.F-hom (λ f → (A ⋆ B) ⋆ C_f f) ⋆ ηm (F.F-ob Y) ≡ 
+                FF.F-hom (λ f → A ⋆ (B ⋆ C_f f)) ⋆ ηm (F.F-ob Y)
+        step1 = cong (λ k → k ⋆ ηm (F.F-ob Y)) (cong FF.F-hom (funExt (λ f → C.⋆Assoc A B (C_f f))))
+        
+        step2 : FF.F-hom (λ f → A ⋆ (B ⋆ C_f f)) ≡ FF.F-hom (λ f → A ⋆ (CYEF.F-hom f ⋆ N-ob τx Y))
+        step2 = cong FF.F-hom (funExt (λ f → cong (λ k → A ⋆ k) (sym (N-hom τx f))))
+        
+        step3 : FF.F-hom (λ f → A ⋆ (CYEF.F-hom f ⋆ N-ob τx Y)) ≡ FF.F-hom (λ f → (A ⋆ CYEF.F-hom f) ⋆ N-ob τx Y)
+        step3 = cong FF.F-hom (funExt (λ f → sym (C.⋆Assoc A (CYEF.F-hom f) (N-ob τx Y))))
+        
+        step4 : FF.F-hom (λ f → (A ⋆ CYEF.F-hom f) ⋆ N-ob τx Y) ≡ FF.F-hom (λ f → FF.F-hom (λ _ → C.id ⋆ f) ⋆ N-ob τx Y)
+        step4 = cong FF.F-hom (funExt (λ f → cong (λ k → k ⋆ N-ob τx Y) (sym (FF.F-seq (λ _ → C.id) (λ g → g ⋆ f)))))
+        
+        step5 : FF.F-hom (λ f → FF.F-hom (λ _ → C.id ⋆ f) ⋆ N-ob τx Y) ≡ FF.F-hom (λ f → FF.F-hom (λ _ → f) ⋆ N-ob τx Y)
+        step5 = cong FF.F-hom (funExt (λ f → cong (λ k → FF.F-hom {x = T} k ⋆ N-ob τx Y) (funExt (λ _ → C.⋆IdL f))))
+        
+        step6 : FF.F-hom (λ f → FF.F-hom (λ _ → f) ⋆ N-ob τx Y) ≡ FF.F-hom (λ f → FF.F-hom (λ _ → f)) ⋆ G.F-hom (N-ob τx Y)
+        step6 = FF.F-seq (λ f → FF.F-hom (λ _ → f)) (λ k → k ⋆ N-ob τx Y)
+        
+        step7 : (FF.F-hom (λ f → FF.F-hom (λ _ → f)) ⋆ G.F-hom (N-ob τx Y)) ⋆ ηm (F.F-ob Y) ≡ 
+                FF.F-hom (λ f → FF.F-hom (λ _ → f)) ⋆ (G.F-hom (N-ob τx Y) ⋆ ηm (F.F-ob Y))
+        step7 = C.⋆Assoc (FF.F-hom (λ f → FF.F-hom (λ _ → f))) (G.F-hom (N-ob τx Y)) (ηm (F.F-ob Y))
+        
+        step8 : FF.F-hom (λ f → FF.F-hom (λ _ → f)) ≡ ηu (CYEF.F-ob Y)
+        step8 = sym (nu-eq {W = CYF X .F-ob Y})
+        
+        step9 : ηu (CYEF.F-ob Y) ⋆ (G.F-hom (N-ob τx Y) ⋆ ηm (F.F-ob Y)) ≡ (ηu (CYEF.F-ob Y) ⋆ G.F-hom (N-ob τx Y)) ⋆ ηm (F.F-ob Y)
+        step9 = sym (C.⋆Assoc (ηu (CYEF.F-ob Y)) (G.F-hom (N-ob τx Y)) (ηm (F.F-ob Y)))
+        
+        step10 : ηu (CYEF.F-ob Y) ⋆ G.F-hom (N-ob τx Y) ≡ N-ob τx Y ⋆ ηu (G.F-ob (F.F-ob Y))
+        step10 = sym (N-hom nu (N-ob τx Y))
+        
+        step11 : (N-ob τx Y ⋆ ηu (G.F-ob (F.F-ob Y))) ⋆ ηm (F.F-ob Y) ≡ N-ob τx Y ⋆ (ηu (G.F-ob (F.F-ob Y)) ⋆ ηm (F.F-ob Y))
+        step11 = C.⋆Assoc (N-ob τx Y) (ηu (G.F-ob (F.F-ob Y))) (ηm (F.F-ob Y))
+        
+        step12 : ηu (G.F-ob (F.F-ob Y)) ⋆ ηm (F.F-ob Y) ≡ C.id
+        step12 = monad-idˡ {X = F.F-ob Y}
+        
+        step13 : N-ob τx Y ⋆ C.id ≡ N-ob τx Y
+        step13 = C.⋆IdR (N-ob τx Y)
+      in step1 ∙ (cong (λ k → k ⋆ ηm (F.F-ob Y)) (step2 ∙ (step3 ∙ (step4 ∙ (step5 ∙ step6)))) ∙ (step7 ∙ (cong (λ k → k ⋆ (G.F-hom (N-ob τx Y) ⋆ ηm (F.F-ob Y))) step8 ∙ (step9 ∙ (cong (λ k → k ⋆ ηm (F.F-ob Y)) step10 ∙ (step11 ∙ (cong (λ k → N-ob τx Y ⋆ k) step12 ∙ step13)))))))
+
     pointfree-equivalence : (NatTrans (CYEF X) (G ∘F F)) ⇿ fst (GG.F-ob (F.F-ob X))
     pointfree-equivalence = record
       { to = τx2ggfx
       ; from = ggfx2τx
-      ; to_from = {!!}
-      ; from_to = {!!}
+      ; to_from = to_from-proof
+      ; from_to = λ τx → makeNatTransPath (funExt (λ Y → from_to-proof τx Y))
       }
 ```
 
