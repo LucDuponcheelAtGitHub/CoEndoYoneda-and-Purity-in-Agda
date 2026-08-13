@@ -303,28 +303,13 @@ record CoEndoYonedaEquivalence
         
         
         
-        step3 : FF.F-hom (λ g → ggfx ⋆ G.F-hom (F.F-hom (g ⋆ f))) ≡ 
-                FF.F-hom (λ g → (ggfx ⋆ G.F-hom (F.F-hom g)) ⋆ G.F-hom (F.F-hom f))
-        step3 = cong FF.F-hom (funExt (λ g → 
-                  ggfx ⋆ G.F-hom (F.F-hom (g ⋆ f))
-                    ≡⟨ cong (λ k → ggfx ⋆ k) (cong G.F-hom (F.F-seq g f)) ⟩
-                  ggfx ⋆ G.F-hom (F.F-hom g ⋆ F.F-hom f)
-                    ≡⟨ cong (λ k → ggfx ⋆ k) (G.F-seq (F.F-hom g) (F.F-hom f)) ⟩
-                  ggfx ⋆ (G.F-hom (F.F-hom g) ⋆ G.F-hom (F.F-hom f))
-                    ≡⟨ sym (C.⋆Assoc ggfx (G.F-hom (F.F-hom g)) (G.F-hom (F.F-hom f))) ⟩
-                  (ggfx ⋆ G.F-hom (F.F-hom g)) ⋆ G.F-hom (F.F-hom f)
-                    ∎))
-        
-        
-        
-        
       in 
         A ⋆ (B_Z ⋆ ηm (F.F-ob Z))
           ≡⟨ sym (C.⋆Assoc A B_Z (ηm (F.F-ob Z))) ⟩
         (A ⋆ B_Z) ⋆ ηm (F.F-ob Z)
           ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Z)) (sym (FF.F-seq (λ g → g ⋆ f) (λ h → ggfx ⋆ G.F-hom (F.F-hom h)))) ⟩
         FF.F-hom (λ g → ggfx ⋆ G.F-hom (F.F-hom (g ⋆ f))) ⋆ ηm (F.F-ob Z)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Z)) step3 ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Z)) (cong FF.F-hom (funExt (λ g → ggfx2τx-commute-lemma ggfx f g))) ⟩
         FF.F-hom (λ g → (ggfx ⋆ G.F-hom (F.F-hom g)) ⋆ G.F-hom (F.F-hom f)) ⋆ ηm (F.F-ob Z)
           ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Z)) (FF.F-seq (λ g → ggfx ⋆ G.F-hom (F.F-hom g)) (λ u → u ⋆ G.F-hom (F.F-hom f))) ⟩
         (B_Y ⋆ C_f) ⋆ ηm (F.F-ob Z)
