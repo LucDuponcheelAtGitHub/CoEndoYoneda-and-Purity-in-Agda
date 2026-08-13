@@ -495,7 +495,7 @@ module PurityTheorems {ℓ : Level} (M : MonadOnSets {ℓ}) where
   record Idempotent : Type (lsuc ℓ) where
     field
       idempotent : 
-        {X : SetsObj} (mx : fst (F₀ X)) → 
+        {X : hSet ℓ} (mx : fst (F₀ X)) → 
           mMap {X} {F₀ X} (mPure {X}) mx ≡ mPure {F₀ X} mx
 
   open Idempotent
@@ -524,7 +524,7 @@ module PurityTheorems {ℓ : Level} (M : MonadOnSets {ℓ}) where
   KleisliBasicFunctionalCategory = BasicFunctionalCategory Kleisli KF
 
   mPure-mMap-eq :
-    ∀ {X : SetsObj} (mx : fst (F₀ X)) → 
+    ∀ {X : hSet ℓ} (mx : fst (F₀ X)) → 
       mMap {X} {F₀ X} (mPure {X}) mx ≡ 
         mApply {X} {F₀ X} (λ x → mPure {F₀ X} (mPure {X} x)) mx
   mPure-mMap-eq {X} mx = refl
@@ -649,3 +649,269 @@ module PurityTheorems {ℓ : Level} (M : MonadOnSets {ℓ}) where
         }
     }
 ```
+
+We now define `EnforcingPurity` which is equivalent with `Idempotent`.
+
+```agda
+  record EnforcingPurity : Type (lsuc ℓ) where
+    field
+      enforcingPurity : {X : hSet ℓ} (mx : fst (F₀ X)) → mApply {X} {F₀ X} (λ z → mPure {F₀ X} (mPure {X} z)) mx ≡ mPure {F₀ X} mx
+
+  open EnforcingPurity
+
+  idempotent-equiv-enforcing-purity : Idempotent ⇔ EnforcingPurity 
+  idempotent-equiv-enforcing-purity = record 
+    { to = λ i → record
+          { enforcingPurity = λ {X} mx →
+                mApply {X} {F₀ X} (λ z → mPure {F₀ X} (mPure {X} z)) mx
+                  ≡⟨ sym (mPure-mMap-eq {X} mx) ⟩
+                mMap {X} {F₀ X} (mPure {X}) mx
+                  ≡⟨ idempotent i mx ⟩
+                mPure {F₀ X} mx
+              ∎
+          }
+    ; from = λ ep → record
+          { idempotent = λ {X} mx →
+                mMap {X} {F₀ X} (mPure {X}) mx
+                  ≡⟨ mPure-mMap-eq {X} mx ⟩
+                mApply {X} {F₀ X} (λ z → mPure {F₀ X} (mPure {X} z)) mx
+                  ≡⟨ enforcingPurity ep mx ⟩
+                mPure {F₀ X} mx
+              ∎
+          }
+    }
+```
+
+`Singleton` defines what it means to be a singleton.
+
+```agda
+  Singleton : Type ℓ → Type ℓ
+  Singleton A = (x y : A) → x ≡ y
+```
+
+The main result is encoded in `enforcing-purity-implies-pure-unit-eq`.
+
+```agda
+  T : hSet ℓ
+  T = Unit* , isSetUnit*
+
+  t : fst T
+  t = tt*
+```
+
+```agda
+  enforcing-purity-implies-pure-unit-eq : 
+    EnforcingPurity → (mt : fst (F₀ T)) → mt ≡ mPure {T} t
+  enforcing-purity-implies-pure-unit-eq ep mt =
+    let 
+      MT = F₀ T
+      MMT = F₀ MT
+      μT = mApply {MT} {T} (λ (w : fst MT) → mPure {T} t)
+          
+      lhs-inner : 
+        ∀ x → mApply {MT} {T} (λ (w : fst MT) → mPure {T} t) (mPure {MT} (mPure {T} x)) ≡ mPure {T} t
+      lhs-inner x = 
+        mApply {MT} {T} (λ (w : fst MT) → mPure {T} t) (mPure {MT} (mPure {T} x))
+          ≡⟨ mApply-pure {MT} {T} {f = λ (w : fst MT) → mPure {T} t} ⟩
+        mPure {T} t
+          ∎
+      
+      ⊤-is-singleton : (a b : fst T) → a ≡ b
+      ⊤-is-singleton x y = refl
+      
+      lhs-eq : μT (mApply {T} {MT} (λ z → mPure {MT} (mPure {T} z)) mt) ≡ mt
+      lhs-eq = 
+        μT (mApply {T} {MT} (λ z → mPure {MT} (mPure {T} z)) mt)
+          ≡⟨ mApply-assoc {T} {MT} {T} {f = λ z → mPure {MT} (mPure {T} z)} {g = λ (w : fst MT) → mPure {T} t} {mx = mt} ⟩
+        mApply {T} {T} (λ x → mApply {MT} {T} (λ (w : fst MT) → mPure {T} t) (mPure {MT} (mPure {T} x))) mt
+          ≡⟨ cong (λ k → mApply {T} {T} k mt) (funExt (λ x → lhs-inner x)) ⟩
+        mApply {T} {T} (λ x → mPure {T} t) mt
+          ≡⟨ cong (λ k → mApply {T} {T} (λ x → mPure {T} (k x)) mt) (funExt (λ x → sym (⊤-is-singleton t x))) ⟩
+        mApply {T} {T} (λ x → mPure {T} x) mt
+          ≡⟨ mPure-mApply ⟩
+        mt
+          ∎
+
+      rhs-eq : μT (mApply {T} {MT} (λ z → mPure {MT} (mPure {T} z)) mt) ≡ mPure {T} t
+      rhs-eq = 
+        μT (mApply {T} {MT} (λ z → mPure {MT} (mPure {T} z)) mt)
+          ≡⟨ cong μT (enforcingPurity ep mt) ⟩
+        μT (mPure {MT} mt)
+          ≡⟨ mApply-pure {MT} {T} {f = λ (w : fst MT) → mPure {T} t} {x = mt} ⟩
+        mPure {T} t
+          ∎
+
+    in sym lhs-eq ∙ rhs-eq
+```
+
+## Examples
+
+Here are some concrete examples.
+
+They use `Triple` in order to disambiguate from `Monad`
+
+```agda
+
+open import Data.Maybe hiding (_>>=_)
+open import Data.List
+open import Cubical.Data.Sigma
+open import Cubical.Data.Sum
+open import Cubical.Data.Unit
+open import Function.Base using (id; _∘_)
+
+open import Cubical.Relation.Nullary
+open import Cubical.Data.Empty
+
+private
+  variable
+    u : Level
+
+record Triple {u : Level} (M : Type u → Type u) : Type (lsuc u) where
+  field
+    pure : ∀ {X : Type u} → X → M X
+    _>>=_ : ∀ {X Y : Type u} → M X → (X → M Y) → M Y
+
+open Triple {{...}}
+
+EnforcingPurityEq : ∀ {u} (M : Type u → Type u) ⦃ _ : Triple M ⦄ → Type (lsuc u)
+EnforcingPurityEq {u} M = ∀ {X : Type u} (mx : M X) → (mx >>= (pure ∘ pure)) ≡ pure mx
+
+instance
+  TripleMaybe : ∀ {u} → Triple {u} Maybe
+  TripleMaybe = record
+    { pure = just
+    ; _>>=_ = λ { nothing _ → nothing
+                  ; (just x) f → f x
+                  }
+    }
+
+maybe-not-pure : ∀ {u} → ¬ EnforcingPurityEq {u} Maybe
+maybe-not-pure {u} h =
+  let T = Lift u Unit
+  in contradiction-from (h (nothing {A = T}))
+  where
+    T = Lift u Unit
+    contradiction-from : _≡_ {A = Maybe (Maybe T)} nothing (just nothing) → ⊥
+    contradiction-from p = transport (λ i → P (p i)) tt*
+      where
+        P : Maybe (Maybe T) → Type lzero
+        P nothing = Unit*
+        P (just _) = ⊥
+
+instance
+  TripleList : ∀ {u} → Triple {u} List
+  TripleList = record
+    { pure = λ x → x ∷ []
+    ; _>>=_ = λ xs f → concatMap f xs
+    }
+
+list-not-pure : ∀ {u} → ¬ EnforcingPurityEq {u} List
+list-not-pure {u} h =
+  let T = Lift u Unit
+      t = lift tt
+  in contradiction-from (h (t ∷ t ∷ []))
+  where
+    T = Lift u Unit
+    t = lift tt
+    contradiction-from : 
+      _≡_ {A = List (List T)} ((t ∷ []) ∷ (t ∷ []) ∷ []) ((t ∷ t ∷ []) ∷ []) → ⊥
+    contradiction-from p = transport (λ i → P (p i)) tt*
+      where
+        P : List (List T) → Type lzero
+        P (_ ∷ _ ∷ _) = Unit*
+        P _ = ⊥
+
+MyReader : ∀ {u} → Type u → Type u → Type u
+MyReader R X = R → X
+
+instance
+  TripleReader : ∀ {u} {R : Type u} → Triple (MyReader R)
+  TripleReader = record
+    { pure = λ x _ → x
+    ; _>>=_ = λ m f r → f (m r) r
+    }
+
+SingletonProp : ∀ {u} → Type u → Type u
+SingletonProp A = (x y : A) → x ≡ y
+
+reader-purity-implies : ∀ {u} (R : Type u) → EnforcingPurityEq (MyReader R) → SingletonProp R
+reader-purity-implies R h r1 r2 =
+  cong (λ f → f r1 r2) (h (λ r → r))
+
+MyWriter : ∀ {u} → Type u → Type u → Type u
+MyWriter W X = X × W
+
+module WriterTriple {u : Level} (W : Type u) (e : W) (_∙_ : W → W → W) where
+  
+  instance
+    TripleWriter : Triple (MyWriter W)
+    TripleWriter = record
+      { pure = λ x → (x , e)
+      ; _>>=_ = λ mx f → let (y , w) = f (fst mx) in (y , snd mx ∙ w)
+      }
+
+  writer-purity-implies : EnforcingPurityEq (MyWriter W) → ∀ w → w ≡ e
+  writer-purity-implies h w =
+    sym (cong snd (cong fst (h (e , w))))
+
+MyState : ∀ {u} → Type u → Type u → Type u
+MyState S X = S → X × S
+
+instance
+  TripleState : ∀ {u} {S : Type u} → Triple (MyState S)
+  TripleState = record
+    { pure = λ x s → (x , s)
+    ; _>>=_ = λ mx f s → let (x , s') = mx s in f x s'
+    }
+
+state-purity-implies : ∀ {u} (S : Type u) → EnforcingPurityEq (MyState S) → SingletonProp S
+state-purity-implies S h s1 s2 =
+  cong (λ f → fst (f s2)) (cong (λ f → fst (f s1)) (h (λ s → (s , s))))
+
+MyCont : ∀ {u} → Type u → Type u → Type u
+MyCont R X = (X → R) → R
+
+instance
+  TripleCont : ∀ {u} {R : Type u} → Triple (MyCont R)
+  TripleCont = record
+    { pure = λ x k → k x
+    ; _>>=_ = λ mx f k → mx (λ x → f x k)
+    }
+
+cont-purity-implies : ∀ {u} (R : Type u) → EnforcingPurityEq (MyCont R) → SingletonProp R
+cont-purity-implies R h r1 r2 =
+  let m1 : MyCont R R
+      m1 = λ _ → r1
+  in cong (λ f → f (λ _ → r2)) (h m1)
+
+-- `IO` simulated as `MyErrorState`
+MyErrorState : ∀ {u} → Type u → Type u → Type u → Type u
+MyErrorState E S X = S → (E × S) ⊎ (X × S)
+
+instance
+  TripleMyErrorState : ∀ {u} {E S : Type u} → Triple (MyErrorState E S)
+  TripleMyErrorState {u} {E} {S} = record
+    { pure = λ x w → inr (x , w)
+    ; _>>=_ = bind
+    }
+    where
+      bind : ∀ {X Y : Type u} → MyErrorState E S X → (X → MyErrorState E S Y) → MyErrorState E S Y
+      bind mx f w = helper (mx w) f
+        where
+          helper : ∀ {X Y} → (E × S) ⊎ (X × S) → (X → MyErrorState E S Y) → (E × S) ⊎ (Y × S)
+          helper (inl err) f = inl err
+          helper (inr (x , w')) f = f x w'
+
+my-io-not-pure : ∀ {u} {E S : Type u} (e : E) (s : S) → ¬ EnforcingPurityEq (MyErrorState E S)
+my-io-not-pure {u} {E} {S} e s h =
+  let m = λ s → inl (e , s)
+  in contradiction-from (cong (λ f → f s) (h m))
+  where
+    contradiction-from : {m : MyErrorState E S (Lift u Unit)} → _≡_ {A = (E × S) ⊎ (MyErrorState E S (Lift u Unit) × S)} (inl (e , s)) (inr (m , s)) → ⊥
+    contradiction-from p = transport (λ i → P (p i)) tt*
+      where
+        P : (E × S) ⊎ (MyErrorState E S (Lift u Unit) × S) → Type lzero
+        P (inl _) = Unit*
+        P (inr _) = ⊥
+```
+
