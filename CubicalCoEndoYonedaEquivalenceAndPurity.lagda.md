@@ -83,7 +83,7 @@ elements of `fst (F-ob F X)`.
 
 This equivalence is the foundation of studying sets `X` by studying all functions `X → Y` to sets
 `Y`. In Cubical Agda, equality of natural transformations follows directly from function
-extensionality and paths, without needing extra postulates.
+extensionality and paths, without needing extra `postulate`s.
 
 ```agda
   module StandardEquivalence 
@@ -401,48 +401,35 @@ record CoEndoYonedaEquivalence
         B = N-ob τx X
         C_f : C.Hom[ X , Y ] → C.Hom[ G.F-ob (F.F-ob X) , G.F-ob (F.F-ob Y) ]
         C_f = λ f → G.F-hom (F.F-hom f)
-        
-        step1 : FF.F-hom (λ f → (A ⋆ B) ⋆ C_f f) ⋆ ηm (F.F-ob Y) ≡ 
-                FF.F-hom (λ f → A ⋆ (B ⋆ C_f f)) ⋆ ηm (F.F-ob Y)
-        step1 = cong (λ k → k ⋆ ηm (F.F-ob Y)) (cong FF.F-hom (funExt (λ f → C.⋆Assoc A B (C_f f))))
-        
-        step2 : FF.F-hom (λ f → A ⋆ (B ⋆ C_f f)) ≡ FF.F-hom (λ f → A ⋆ (CYEF.F-hom f ⋆ N-ob τx Y))
-        step2 = cong FF.F-hom (funExt (λ f → cong (λ k → A ⋆ k) (sym (N-hom τx f))))
-        
-        step3 : FF.F-hom (λ f → A ⋆ (CYEF.F-hom f ⋆ N-ob τx Y)) ≡ FF.F-hom (λ f → (A ⋆ CYEF.F-hom f) ⋆ N-ob τx Y)
-        step3 = cong FF.F-hom (funExt (λ f → sym (C.⋆Assoc A (CYEF.F-hom f) (N-ob τx Y))))
-        
-        step4 : FF.F-hom (λ f → (A ⋆ CYEF.F-hom f) ⋆ N-ob τx Y) ≡ FF.F-hom (λ f → FF.F-hom (λ _ → C.id ⋆ f) ⋆ N-ob τx Y)
-        step4 = cong FF.F-hom (funExt (λ f → cong (λ k → k ⋆ N-ob τx Y) (sym (FF.F-seq (λ _ → C.id) (λ g → g ⋆ f)))))
-        
-        step5 : FF.F-hom (λ f → FF.F-hom (λ _ → C.id ⋆ f) ⋆ N-ob τx Y) ≡ FF.F-hom (λ f → FF.F-hom (λ _ → f) ⋆ N-ob τx Y)
-        step5 = cong FF.F-hom (funExt (λ f → cong (λ k → FF.F-hom {x = T} k ⋆ N-ob τx Y) (funExt (λ _ → C.⋆IdL f))))
-        
-        step6 : FF.F-hom (λ f → FF.F-hom (λ _ → f) ⋆ N-ob τx Y) ≡ FF.F-hom (λ f → FF.F-hom (λ _ → f)) ⋆ G.F-hom (N-ob τx Y)
-        step6 = FF.F-seq (λ f → FF.F-hom (λ _ → f)) (λ k → k ⋆ N-ob τx Y)
-        
-        step7 : (FF.F-hom (λ f → FF.F-hom (λ _ → f)) ⋆ G.F-hom (N-ob τx Y)) ⋆ ηm (F.F-ob Y) ≡ 
-                FF.F-hom (λ f → FF.F-hom (λ _ → f)) ⋆ (G.F-hom (N-ob τx Y) ⋆ ηm (F.F-ob Y))
-        step7 = C.⋆Assoc (FF.F-hom (λ f → FF.F-hom (λ _ → f))) (G.F-hom (N-ob τx Y)) (ηm (F.F-ob Y))
-        
-        step8 : FF.F-hom (λ f → FF.F-hom (λ _ → f)) ≡ ηu (CYEF.F-ob Y)
-        step8 = sym (nu-eq {W = CYF X .F-ob Y})
-        
-        step9 : ηu (CYEF.F-ob Y) ⋆ (G.F-hom (N-ob τx Y) ⋆ ηm (F.F-ob Y)) ≡ (ηu (CYEF.F-ob Y) ⋆ G.F-hom (N-ob τx Y)) ⋆ ηm (F.F-ob Y)
-        step9 = sym (C.⋆Assoc (ηu (CYEF.F-ob Y)) (G.F-hom (N-ob τx Y)) (ηm (F.F-ob Y)))
-        
-        step10 : ηu (CYEF.F-ob Y) ⋆ G.F-hom (N-ob τx Y) ≡ N-ob τx Y ⋆ ηu (G.F-ob (F.F-ob Y))
-        step10 = sym (N-hom nu (N-ob τx Y))
-        
-        step11 : (N-ob τx Y ⋆ ηu (G.F-ob (F.F-ob Y))) ⋆ ηm (F.F-ob Y) ≡ N-ob τx Y ⋆ (ηu (G.F-ob (F.F-ob Y)) ⋆ ηm (F.F-ob Y))
-        step11 = C.⋆Assoc (N-ob τx Y) (ηu (G.F-ob (F.F-ob Y))) (ηm (F.F-ob Y))
-        
-        step12 : ηu (G.F-ob (F.F-ob Y)) ⋆ ηm (F.F-ob Y) ≡ C.id
-        step12 = monad-idˡ {X = F.F-ob Y}
-        
-        step13 : N-ob τx Y ⋆ C.id ≡ N-ob τx Y
-        step13 = C.⋆IdR (N-ob τx Y)
-      in step1 ∙ (cong (λ k → k ⋆ ηm (F.F-ob Y)) (step2 ∙ (step3 ∙ (step4 ∙ (step5 ∙ step6)))) ∙ (step7 ∙ (cong (λ k → k ⋆ (G.F-hom (N-ob τx Y) ⋆ ηm (F.F-ob Y))) step8 ∙ (step9 ∙ (cong (λ k → k ⋆ ηm (F.F-ob Y)) step10 ∙ (step11 ∙ (cong (λ k → N-ob τx Y ⋆ k) step12 ∙ step13)))))))
+      in
+        FF.F-hom (λ f → (A ⋆ B) ⋆ C_f f) ⋆ ηm (F.F-ob Y)
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) (cong FF.F-hom (funExt (λ f → C.⋆Assoc A B (C_f f)))) ⟩
+        FF.F-hom (λ f → A ⋆ (B ⋆ C_f f)) ⋆ ηm (F.F-ob Y)
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) (cong FF.F-hom (funExt (λ f → cong (λ k → A ⋆ k) (sym (N-hom τx f))))) ⟩
+        FF.F-hom (λ f → A ⋆ (CYEF.F-hom f ⋆ N-ob τx Y)) ⋆ ηm (F.F-ob Y)
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) (cong FF.F-hom (funExt (λ f → sym (C.⋆Assoc A (CYEF.F-hom f) (N-ob τx Y))))) ⟩
+        FF.F-hom (λ f → (A ⋆ CYEF.F-hom f) ⋆ N-ob τx Y) ⋆ ηm (F.F-ob Y)
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) (cong FF.F-hom (funExt (λ f → cong (λ k → k ⋆ N-ob τx Y) (sym (FF.F-seq (λ _ → C.id) (λ g → g ⋆ f)))))) ⟩
+        FF.F-hom (λ f → FF.F-hom (λ _ → C.id ⋆ f) ⋆ N-ob τx Y) ⋆ ηm (F.F-ob Y)
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) (cong FF.F-hom (funExt (λ f → cong (λ k → FF.F-hom {x = T} k ⋆ N-ob τx Y) (funExt (λ _ → C.⋆IdL f))))) ⟩
+        FF.F-hom (λ f → FF.F-hom (λ _ → f) ⋆ N-ob τx Y) ⋆ ηm (F.F-ob Y)
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) (FF.F-seq (λ f → FF.F-hom (λ _ → f)) (λ k → k ⋆ N-ob τx Y)) ⟩
+        (FF.F-hom (λ f → FF.F-hom (λ _ → f)) ⋆ G.F-hom (N-ob τx Y)) ⋆ ηm (F.F-ob Y)
+          ≡⟨ C.⋆Assoc (FF.F-hom (λ f → FF.F-hom (λ _ → f))) (G.F-hom (N-ob τx Y)) (ηm (F.F-ob Y)) ⟩
+        FF.F-hom (λ f → FF.F-hom (λ _ → f)) ⋆ (G.F-hom (N-ob τx Y) ⋆ ηm (F.F-ob Y))
+          ≡⟨ cong (λ k → k ⋆ (G.F-hom (N-ob τx Y) ⋆ ηm (F.F-ob Y))) (sym (nu-eq {W = CYF X .F-ob Y})) ⟩
+        ηu (CYEF.F-ob Y) ⋆ (G.F-hom (N-ob τx Y) ⋆ ηm (F.F-ob Y))
+          ≡⟨ sym (C.⋆Assoc (ηu (CYEF.F-ob Y)) (G.F-hom (N-ob τx Y)) (ηm (F.F-ob Y))) ⟩
+        (ηu (CYEF.F-ob Y) ⋆ G.F-hom (N-ob τx Y)) ⋆ ηm (F.F-ob Y)
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) (sym (N-hom nu (N-ob τx Y))) ⟩
+        (N-ob τx Y ⋆ ηu (G.F-ob (F.F-ob Y))) ⋆ ηm (F.F-ob Y)
+          ≡⟨ C.⋆Assoc (N-ob τx Y) (ηu (G.F-ob (F.F-ob Y))) (ηm (F.F-ob Y)) ⟩
+        N-ob τx Y ⋆ (ηu (G.F-ob (F.F-ob Y)) ⋆ ηm (F.F-ob Y))
+          ≡⟨ cong (λ k → N-ob τx Y ⋆ k) (monad-idˡ {X = F.F-ob Y}) ⟩
+        N-ob τx Y ⋆ C.id
+          ≡⟨ C.⋆IdR (N-ob τx Y) ⟩
+        N-ob τx Y
+          ∎
 
     pointfree-equivalence : (NatTrans (CYEF X) (G ∘F F)) ⇿ fst (GG.F-ob (F.F-ob X))
     pointfree-equivalence = record
