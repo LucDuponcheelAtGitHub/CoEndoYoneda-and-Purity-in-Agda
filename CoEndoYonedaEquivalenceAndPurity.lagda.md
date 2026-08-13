@@ -922,18 +922,16 @@ We `postulate` this heterogeneous equality as the structural uniqueness principl
               mApply (mPure • (λ g t → mApply gmx2mx (g t))) 
                 (mPure {T → MF₀ X} (λ _ → mPure {X} x))
           comm {X} {Y} gmx2mx x = 
-                 let 
-                   comm-lhs : 
-                    mApply (mPure • (λ g u → mApply gmx2mx (g u))) (mPure (λ _ → mPure x)) ≡
-                      mPure (λ _ → gmx2mx x)
-                   comm-lhs = begin
-                     mApply (mPure • (λ g u → mApply gmx2mx (g u))) (mPure (λ _ → mPure x))
-                       ≡⟨ *-identityʳ {k = mPure • (λ g u → mApply gmx2mx (g u))} (λ _ → mPure x) ⟩
-                     mPure (λ u → mApply gmx2mx (mPure x))
-                       ≡⟨ cong (λ k → mPure (λ _ → k)) (*-identityʳ {k = gmx2mx} x) ⟩
-                     mPure (λ _ → gmx2mx x)
-                       ∎
-                 in sym (trans comm-lhs (sym (nu-mApply-lemma (gmx2mx x))))
+                begin
+                  mApply (λ z → mPure (λ _ → mPure z)) (gmx2mx x)
+                    ≡⟨ nu-mApply-lemma (gmx2mx x) ⟩
+                  mPure (λ _ → gmx2mx x)
+                    ≡⟨ sym (cong (λ k → mPure (λ _ → k)) (*-identityʳ {k = gmx2mx} x)) ⟩
+                  mPure (λ u → mApply gmx2mx (mPure x))
+                    ≡⟨ sym (*-identityʳ {k = mPure • (λ g u → mApply gmx2mx (g u))}
+                            (λ _ → mPure x)) ⟩
+                  mApply (mPure • (λ g u → mApply gmx2mx (g u))) (mPure (λ _ → mPure x))
+                ∎
         in
         record { strict = λ f≈g → funext f≈g
                ; nu = record 
