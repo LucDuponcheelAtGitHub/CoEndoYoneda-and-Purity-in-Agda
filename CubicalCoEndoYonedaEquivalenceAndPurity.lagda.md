@@ -127,22 +127,22 @@ module StandardCoYonedaEquivalence {ℓ ℓ' : Level} (C : Category ℓ ℓ') wh
 
   open C 
 
-  CYF : C.ob → Functor C (SET ℓ')
+  CYF : ob → Functor C (SET ℓ')
   CYF X = record
-    { F-ob = λ Y → C.Hom[ X , Y ] , C.isSetHom
+    { F-ob = λ Y → Hom[ X , Y ] , isSetHom
     ; F-hom = λ f g → g ⋆ f
-    ; F-id = funExt C.⋆IdR
-    ; F-seq = λ f g → funExt (λ h → sym (C.⋆Assoc h f g))
+    ; F-id = funExt ⋆IdR
+    ; F-seq = λ f g → funExt (λ h → sym (⋆Assoc h f g))
     }
 
   module Equivalence 
     (F : Functor C (SET ℓ')) 
-    (X : C.ob) where
+    (X : ob) where
 
     τx2fx : NatTrans (CYF X) F → fst (F-ob F X)
-    τx2fx τx = N-ob τx X C.id
+    τx2fx τx = N-ob τx X id
 
-    fx2τx-η : fst (F-ob F X) → ∀ Y → (C.Hom[ X , Y ] → fst (F-ob F Y))
+    fx2τx-η : fst (F-ob F X) → ∀ Y → (Hom[ X , Y ] → fst (F-ob F Y))
     fx2τx-η fx Y = λ f → F-hom F f fx
 
     fx2τx : fst (F-ob F X) → NatTrans (CYF X) F
@@ -156,7 +156,7 @@ module StandardCoYonedaEquivalence {ℓ ℓ' : Level} (C : Category ℓ ℓ') wh
 
     to_from-τx2fx : ∀ (τx : NatTrans (CYF X) F) → fx2τx (τx2fx τx) ≡ τx
     to_from-τx2fx τx = makeNatTransPath (funExt (λ Y → funExt (λ f → 
-      sym (funExt⁻ (N-hom τx {x = X} {y = Y} f) C.id) ∙ cong (N-ob τx Y) (C.⋆IdL f))))
+      sym (funExt⁻ (N-hom τx {x = X} {y = Y} f) id) ∙ cong (N-ob τx Y) (⋆IdL f))))
 
     equivalence : (NatTrans (CYF X) F) ⇿ (fst (F-ob F X))
     equivalence = record
@@ -187,10 +187,10 @@ record BasicFunctionalCategory
   t : fst T
   t = tt*
 
-  CYEF : C.ob → Functor C C
+  CYEF : ob → Functor C C
   CYEF X = FF ∘F (CYF X)
 
-  FFT : C.ob
+  FFT : ob
   FFT = FF.F-ob T
 
   GEFF : Functor C C
@@ -200,7 +200,7 @@ record BasicFunctionalCategory
     nu : NatTrans Id GEFF
     nu-eq-T : N-ob nu (FF.F-ob T) ≡ FF.F-hom (λ _ → FF.F-hom (λ _ → t))
 
-  ηu : ∀ X → C.Hom[ X , F-ob GEFF X ]
+  ηu : ∀ X → Hom[ X , F-ob GEFF X ]
   ηu = N-ob nu
 ```
 
@@ -231,9 +231,9 @@ record FunctionalCategory
 
     mu : NatTrans (GEFF ∘F GEFF) GEFF  
 
-    monad-idˡ : ∀ {X} → N-ob nu (F-ob GEFF X) ⋆ N-ob mu X ≡ C.id
+    monad-idˡ : ∀ {X} → N-ob nu (F-ob GEFF X) ⋆ N-ob mu X ≡ id
 
-  ηm : ∀ X → C.Hom[ F-ob (GEFF ∘F GEFF) X , F-ob GEFF X ]
+  ηm : ∀ X → Hom[ F-ob (GEFF ∘F GEFF) X , F-ob GEFF X ]
   ηm = N-ob mu
 ```
 
@@ -257,7 +257,7 @@ record CoEndoYonedaEquivalence
   open FunctionalCategory fc
   open StandardCoYonedaEquivalence C
 
-  module CoEndoEquivalence {F : Functor C C} {X : C.ob} where
+  module CoEndoEquivalence {F : Functor C C} {X : ob} where
     private
       module F = Functor F
       module CYEF = Functor (CYEF X)
@@ -273,14 +273,14 @@ record CoEndoYonedaEquivalence
       module GG = Functor GG
 
     τx2ggfx : NatTrans (CYEF X) (G ∘F F) → fst (GG.F-ob (F.F-ob X))
-    τx2ggfx τx = FF.F-hom (λ _ → C.id) ⋆ N-ob τx X
+    τx2ggfx τx = FF.F-hom (λ _ → id) ⋆ N-ob τx X
 
-    ggfx2τx-η : fst (GG.F-ob (F.F-ob X)) → ∀ Y → C.Hom[ CYEF.F-ob Y , G.F-ob (F.F-ob Y) ]
+    ggfx2τx-η : fst (GG.F-ob (F.F-ob X)) → ∀ Y → Hom[ CYEF.F-ob Y , G.F-ob (F.F-ob Y) ]
     ggfx2τx-η ggfx Y = (FF.F-hom (λ f → ggfx ⋆ G.F-hom (F.F-hom f))) ⋆ ηm (F.F-ob Y)
 
     ggfx2τx-commute-lemma : 
-      ∀ (ggfx : fst (GG.F-ob (F.F-ob X))) {Y Z : C.ob} (f : C.Hom[ Y , Z ])
-          (g : C.Hom[ X , Y ]) →
+      ∀ (ggfx : fst (GG.F-ob (F.F-ob X))) {Y Z : ob} (f : Hom[ Y , Z ])
+          (g : Hom[ X , Y ]) →
         ggfx ⋆ G.F-hom (F.F-hom (g ⋆ f)) ≡ (ggfx ⋆ G.F-hom (F.F-hom g)) ⋆ G.F-hom (F.F-hom f)
     ggfx2τx-commute-lemma ggfx {Y} {Z} f g = 
       ggfx ⋆ G.F-hom (F.F-hom (g ⋆ f))
@@ -288,12 +288,12 @@ record CoEndoYonedaEquivalence
       ggfx ⋆ G.F-hom (F.F-hom g ⋆ F.F-hom f)
         ≡⟨ cong (λ k → ggfx ⋆ k) (G.F-seq (F.F-hom g) (F.F-hom f)) ⟩
       ggfx ⋆ (G.F-hom (F.F-hom g) ⋆ G.F-hom (F.F-hom f))
-        ≡⟨ sym (C.⋆Assoc ggfx (G.F-hom (F.F-hom g)) (G.F-hom (F.F-hom f))) ⟩
+        ≡⟨ sym (⋆Assoc ggfx (G.F-hom (F.F-hom g)) (G.F-hom (F.F-hom f))) ⟩
       (ggfx ⋆ G.F-hom (F.F-hom g)) ⋆ G.F-hom (F.F-hom f)
         ∎
 
     ggfx2τx-commute : 
-      ∀ (ggfx : fst (GG.F-ob (F.F-ob X))) {Y Z : C.ob} (f : C.Hom[ Y , Z ]) → 
+      ∀ (ggfx : fst (GG.F-ob (F.F-ob X))) {Y Z : ob} (f : Hom[ Y , Z ]) → 
         CYEF.F-hom f ⋆ ggfx2τx-η ggfx Z ≡ ggfx2τx-η ggfx Y ⋆ G.F-hom (F.F-hom f)
     ggfx2τx-commute ggfx {Y} {Z} f =
       let
@@ -304,7 +304,7 @@ record CoEndoYonedaEquivalence
         
       in 
         A ⋆ (B_Z ⋆ ηm (F.F-ob Z))
-          ≡⟨ sym (C.⋆Assoc A B_Z (ηm (F.F-ob Z))) ⟩
+          ≡⟨ sym (⋆Assoc A B_Z (ηm (F.F-ob Z))) ⟩
         (A ⋆ B_Z) ⋆ ηm (F.F-ob Z)
           ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Z)) 
               (sym (FF.F-seq (λ g → g ⋆ f) (λ h → ggfx ⋆ G.F-hom (F.F-hom h)))) ⟩
@@ -315,11 +315,11 @@ record CoEndoYonedaEquivalence
           ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Z))
               (FF.F-seq (λ g → ggfx ⋆ G.F-hom (F.F-hom g)) (λ u → u ⋆ G.F-hom (F.F-hom f))) ⟩
         (B_Y ⋆ C_f) ⋆ ηm (F.F-ob Z)
-          ≡⟨ C.⋆Assoc B_Y C_f (ηm (F.F-ob Z)) ⟩
+          ≡⟨ ⋆Assoc B_Y C_f (ηm (F.F-ob Z)) ⟩
         B_Y ⋆ (C_f ⋆ ηm (F.F-ob Z))
           ≡⟨ cong (λ k → B_Y ⋆ k) (N-hom mu (F.F-hom f)) ⟩
         B_Y ⋆ (ηm (F.F-ob Y) ⋆ G.F-hom (F.F-hom f))
-          ≡⟨ sym (C.⋆Assoc B_Y (ηm (F.F-ob Y)) (G.F-hom (F.F-hom f))) ⟩
+          ≡⟨ sym (⋆Assoc B_Y (ηm (F.F-ob Y)) (G.F-hom (F.F-hom f))) ⟩
         (B_Y ⋆ ηm (F.F-ob Y)) ⋆ G.F-hom (F.F-hom f)
           ∎
 
@@ -330,45 +330,45 @@ record CoEndoYonedaEquivalence
       }
 
     to_from-proof-lemma1 : ∀ (ggfx : fst (GG.F-ob (F.F-ob X))) → 
-      ggfx ⋆ G.F-hom (F.F-hom C.id) ≡ ggfx ⋆ C.id
+      ggfx ⋆ G.F-hom (F.F-hom id) ≡ ggfx ⋆ id
     to_from-proof-lemma1 ggfx = 
-      ggfx ⋆ G.F-hom (F.F-hom C.id)
+      ggfx ⋆ G.F-hom (F.F-hom id)
         ≡⟨ cong (λ k → ggfx ⋆ G.F-hom k) F.F-id ⟩
-      ggfx ⋆ G.F-hom C.id
+      ggfx ⋆ G.F-hom id
         ≡⟨ cong (λ k → ggfx ⋆ k) G.F-id ⟩
-      ggfx ⋆ C.id
+      ggfx ⋆ id
         ∎
 
     to_from-proof-lemma2 : ∀ (t : fst T) →
-      FF.F-hom (λ (_ : fst T) → t) ≡ C.id
+      FF.F-hom (λ (_ : fst T) → t) ≡ id
     to_from-proof-lemma2 t = 
       FF.F-hom (λ _ → t) 
         ≡⟨ cong FF.F-hom (funExt (λ x → refl)) ⟩
       FF.F-hom (λ x → x)
         ≡⟨ FF.F-id ⟩
-      C.id
+      id
         ∎
 
     to_from-proof : ∀ (ggfx : fst (GG.F-ob (F.F-ob X))) → τx2ggfx (ggfx2τx ggfx) ≡ ggfx
     to_from-proof ggfx = 
       let
-        A = FF.F-hom (λ _ → C.id)
+        A = FF.F-hom (λ _ → id)
         B = FF.F-hom (λ f → ggfx ⋆ G.F-hom (F.F-hom f))
       in 
         τx2ggfx (ggfx2τx ggfx)
-          ≡⟨ sym (C.⋆Assoc A B (ηm (F.F-ob X))) ⟩
+          ≡⟨ sym (⋆Assoc A B (ηm (F.F-ob X))) ⟩
         (A ⋆ B) ⋆ ηm (F.F-ob X)
           ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) 
-              (sym (FF.F-seq (λ _ → C.id) (λ f → ggfx ⋆ G.F-hom (F.F-hom f)))) ⟩
-        FF.F-hom (λ x → ggfx ⋆ G.F-hom (F.F-hom C.id)) ⋆ ηm (F.F-ob X)
+              (sym (FF.F-seq (λ _ → id) (λ f → ggfx ⋆ G.F-hom (F.F-hom f)))) ⟩
+        FF.F-hom (λ x → ggfx ⋆ G.F-hom (F.F-hom id)) ⋆ ηm (F.F-ob X)
           ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X))
               (cong FF.F-hom (funExt (λ _ → to_from-proof-lemma1 ggfx))) ⟩
-        FF.F-hom (λ _ → ggfx ⋆ C.id) ⋆ ηm (F.F-ob X)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) (cong FF.F-hom (funExt (λ _ → C.⋆IdR ggfx))) ⟩
+        FF.F-hom (λ _ → ggfx ⋆ id) ⋆ ηm (F.F-ob X)
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) (cong FF.F-hom (funExt (λ _ → ⋆IdR ggfx))) ⟩
         FF.F-hom (λ _ → ggfx) ⋆ ηm (F.F-ob X)
           ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) 
-              (cong FF.F-hom (funExt (λ _ → sym (C.⋆IdL ggfx)))) ⟩
-        FF.F-hom (λ t → C.id ⋆ ggfx) ⋆ ηm (F.F-ob X)
+              (cong FF.F-hom (funExt (λ _ → sym (⋆IdL ggfx)))) ⟩
+        FF.F-hom (λ t → id ⋆ ggfx) ⋆ ηm (F.F-ob X)
           ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) 
               (cong FF.F-hom 
                 (funExt (λ t → cong (λ k → k ⋆ ggfx) (sym (to_from-proof-lemma2 t))))) ⟩
@@ -376,70 +376,70 @@ record CoEndoYonedaEquivalence
           ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) 
               (FF.F-seq (λ t → FF.F-hom (λ _ → t)) (λ k → k ⋆ ggfx)) ⟩
         (FF.F-hom (λ t → FF.F-hom (λ _ → t)) ⋆ G.F-hom ggfx) ⋆ ηm (F.F-ob X)
-          ≡⟨ C.⋆Assoc (FF.F-hom (λ t → FF.F-hom (λ _ → t))) (G.F-hom ggfx) (ηm (F.F-ob X)) ⟩
+          ≡⟨ ⋆Assoc (FF.F-hom (λ t → FF.F-hom (λ _ → t))) (G.F-hom ggfx) (ηm (F.F-ob X)) ⟩
         FF.F-hom (λ t → FF.F-hom (λ _ → t)) ⋆ (G.F-hom ggfx ⋆ ηm (F.F-ob X))
           ≡⟨ cong (λ k → k ⋆ (G.F-hom ggfx ⋆ ηm (F.F-ob X))) (sym nu-eq-T) ⟩
         ηu FFT ⋆ (G.F-hom ggfx ⋆ ηm (F.F-ob X))
-          ≡⟨ sym (C.⋆Assoc (ηu FFT) (G.F-hom ggfx) (ηm (F.F-ob X))) ⟩
+          ≡⟨ sym (⋆Assoc (ηu FFT) (G.F-hom ggfx) (ηm (F.F-ob X))) ⟩
         (ηu FFT ⋆ G.F-hom ggfx) ⋆ ηm (F.F-ob X)
           ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) (sym (N-hom nu ggfx)) ⟩
         (ggfx ⋆ ηu (G.F-ob (F.F-ob X))) ⋆ ηm (F.F-ob X)
-          ≡⟨ C.⋆Assoc ggfx (ηu (G.F-ob (F.F-ob X))) (ηm (F.F-ob X)) ⟩
+          ≡⟨ ⋆Assoc ggfx (ηu (G.F-ob (F.F-ob X))) (ηm (F.F-ob X)) ⟩
         ggfx ⋆ (ηu (G.F-ob (F.F-ob X)) ⋆ ηm (F.F-ob X))
           ≡⟨ cong (λ k → ggfx ⋆ k) monad-idˡ ⟩
-        ggfx ⋆ C.id
-          ≡⟨ C.⋆IdR ggfx ⟩
+        ggfx ⋆ id
+          ≡⟨ ⋆IdR ggfx ⟩
         ggfx
           ∎
 
     from_to-proof : 
-      ∀ (τx : NatTrans (CYEF X) (G ∘F F)) (Y : C.ob) → ggfx2τx-η (τx2ggfx τx) Y ≡ N-ob τx Y
+      ∀ (τx : NatTrans (CYEF X) (G ∘F F)) (Y : ob) → ggfx2τx-η (τx2ggfx τx) Y ≡ N-ob τx Y
     from_to-proof τx Y = 
       let
-        A : C.Hom[ FFT , CYEF.F-ob X ]
-        A = FF.F-hom (λ _ → C.id)
-        B : C.Hom[ CYEF.F-ob X , G.F-ob (F.F-ob X) ]
+        A : Hom[ FFT , CYEF.F-ob X ]
+        A = FF.F-hom (λ _ → id)
+        B : Hom[ CYEF.F-ob X , G.F-ob (F.F-ob X) ]
         B = N-ob τx X
-        C_f : C.Hom[ X , Y ] → C.Hom[ G.F-ob (F.F-ob X) , G.F-ob (F.F-ob Y) ]
+        C_f : Hom[ X , Y ] → Hom[ G.F-ob (F.F-ob X) , G.F-ob (F.F-ob Y) ]
         C_f = λ f → G.F-hom (F.F-hom f)
       in
         FF.F-hom (λ f → (A ⋆ B) ⋆ C_f f) ⋆ ηm (F.F-ob Y)
           ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) 
-              (cong FF.F-hom (funExt (λ f → C.⋆Assoc A B (C_f f)))) ⟩
+              (cong FF.F-hom (funExt (λ f → ⋆Assoc A B (C_f f)))) ⟩
         FF.F-hom (λ f → A ⋆ (B ⋆ C_f f)) ⋆ ηm (F.F-ob Y)
           ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y))
               (cong FF.F-hom (funExt (λ f → cong (λ k → A ⋆ k) (sym (N-hom τx f))))) ⟩
         FF.F-hom (λ f → A ⋆ (CYEF.F-hom f ⋆ N-ob τx Y)) ⋆ ηm (F.F-ob Y)
           ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) 
               (cong FF.F-hom 
-                (funExt (λ f → sym (C.⋆Assoc A (CYEF.F-hom f) (N-ob τx Y))))) ⟩
+                (funExt (λ f → sym (⋆Assoc A (CYEF.F-hom f) (N-ob τx Y))))) ⟩
         FF.F-hom (λ f → (A ⋆ CYEF.F-hom f) ⋆ N-ob τx Y) ⋆ ηm (F.F-ob Y)
           ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) 
               (cong FF.F-hom (funExt 
-                (λ f → cong (λ k → k ⋆ N-ob τx Y) (sym (FF.F-seq (λ _ → C.id) (λ g → g ⋆ f)))))) ⟩
-        FF.F-hom (λ f → FF.F-hom (λ _ → C.id ⋆ f) ⋆ N-ob τx Y) ⋆ ηm (F.F-ob Y)
+                (λ f → cong (λ k → k ⋆ N-ob τx Y) (sym (FF.F-seq (λ _ → id) (λ g → g ⋆ f)))))) ⟩
+        FF.F-hom (λ f → FF.F-hom (λ _ → id ⋆ f) ⋆ N-ob τx Y) ⋆ ηm (F.F-ob Y)
           ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) 
               (cong FF.F-hom 
                 (funExt (λ f → 
-                  cong (λ k → FF.F-hom {x = T} k ⋆ N-ob τx Y) (funExt (λ _ → C.⋆IdL f))))) ⟩
+                  cong (λ k → FF.F-hom {x = T} k ⋆ N-ob τx Y) (funExt (λ _ → ⋆IdL f))))) ⟩
         FF.F-hom (λ f → FF.F-hom (λ _ → f) ⋆ N-ob τx Y) ⋆ ηm (F.F-ob Y)
           ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) 
               (FF.F-seq (λ f → FF.F-hom (λ _ → f)) (λ k → k ⋆ N-ob τx Y)) ⟩
         (FF.F-hom (λ f → FF.F-hom (λ _ → f)) ⋆ G.F-hom (N-ob τx Y)) ⋆ ηm (F.F-ob Y)
-          ≡⟨ C.⋆Assoc (FF.F-hom (λ f → FF.F-hom (λ _ → f))) (G.F-hom (N-ob τx Y)) (ηm (F.F-ob Y)) ⟩
+          ≡⟨ ⋆Assoc (FF.F-hom (λ f → FF.F-hom (λ _ → f))) (G.F-hom (N-ob τx Y)) (ηm (F.F-ob Y)) ⟩
         FF.F-hom (λ f → FF.F-hom (λ _ → f)) ⋆ (G.F-hom (N-ob τx Y) ⋆ ηm (F.F-ob Y))
           ≡⟨ cong (λ k → k ⋆ (G.F-hom (N-ob τx Y) ⋆ ηm (F.F-ob Y))) 
               (sym (nu-eq {W = CYF X .F-ob Y})) ⟩
         ηu (CYEF.F-ob Y) ⋆ (G.F-hom (N-ob τx Y) ⋆ ηm (F.F-ob Y))
-          ≡⟨ sym (C.⋆Assoc (ηu (CYEF.F-ob Y)) (G.F-hom (N-ob τx Y)) (ηm (F.F-ob Y))) ⟩
+          ≡⟨ sym (⋆Assoc (ηu (CYEF.F-ob Y)) (G.F-hom (N-ob τx Y)) (ηm (F.F-ob Y))) ⟩
         (ηu (CYEF.F-ob Y) ⋆ G.F-hom (N-ob τx Y)) ⋆ ηm (F.F-ob Y)
           ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) (sym (N-hom nu (N-ob τx Y))) ⟩
         (N-ob τx Y ⋆ ηu (G.F-ob (F.F-ob Y))) ⋆ ηm (F.F-ob Y)
-          ≡⟨ C.⋆Assoc (N-ob τx Y) (ηu (G.F-ob (F.F-ob Y))) (ηm (F.F-ob Y)) ⟩
+          ≡⟨ ⋆Assoc (N-ob τx Y) (ηu (G.F-ob (F.F-ob Y))) (ηm (F.F-ob Y)) ⟩
         N-ob τx Y ⋆ (ηu (G.F-ob (F.F-ob Y)) ⋆ ηm (F.F-ob Y))
           ≡⟨ cong (λ k → N-ob τx Y ⋆ k) (monad-idˡ {X = F.F-ob Y}) ⟩
-        N-ob τx Y ⋆ C.id
-          ≡⟨ C.⋆IdR (N-ob τx Y) ⟩
+        N-ob τx Y ⋆ id
+          ≡⟨ ⋆IdR (N-ob τx Y) ⟩
         N-ob τx Y
           ∎
 
