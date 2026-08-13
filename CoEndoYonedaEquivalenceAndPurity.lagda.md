@@ -831,18 +831,11 @@ We `postulate` this heterogeneous equality as the structural uniqueness principl
                   GMZ = T → MZ     
                   gmz = λ (_ : T) → mz
 
-                  nat-at-t : 
-                    (F₁ (GEFF kbfc) gmz ∘K η (nu kbfc) T) t ≡ 
-                      (η (nu kbfc) Z ∘K gmz) t
-                  nat-at-t = sym (commute (nu kbfc) gmz t)
-
-                  left-eq : 
-                     (F₁ (GEFF kbfc) gmz ∘K η (nu kbfc) T) t ≡ mPure gmz
-                  left-eq = 
-                    begin
+                  left-eq-helper : (F₁ (GEFF kbfc) gmz ∘K η (nu kbfc) T) t ≡ mPure gmz
+                  left-eq-helper = begin
                       mApply (F₁ (GEFF kbfc) gmz) (η (nu kbfc) T t)
-                        ≡⟨ cong (λ k → 
-                            mApply (F₁ (GEFF kbfc) gmz) k) (cong (λ k → k t) (nu-eq-T kbfc)) ⟩
+                        ≡⟨ cong (λ k → mApply (F₁ (GEFF kbfc) gmz) k)
+                             (cong (λ k → k t) (nu-eq-T kbfc)) ⟩
                       mApply (F₁ (GEFF kbfc) gmz) (mPure (λ _ → mPure t))
                         ≡⟨ *-identityʳ {k = F₁ (GEFF kbfc) gmz} (λ _ → mPure t) ⟩
                       F₁ (GEFF kbfc) gmz (λ _ → mPure t)
@@ -853,11 +846,15 @@ We `postulate` this heterogeneous equality as the structural uniqueness principl
                         ≡⟨ refl ⟩
                       mPure gmz
                     ∎
-                  right-eq : 
-                     (η (nu kbfc) Z ∘K gmz) t ≡ mApply (η (nu kbfc) Z) mz
-                  right-eq = refl
-
-                in trans (sym right-eq) (trans (sym nat-at-t) left-eq)
+                in begin
+                  mApply (η (nu kbfc) Z) mz
+                    ≡⟨ refl ⟩
+                  (η (nu kbfc) Z ∘K gmz) t
+                    ≡⟨ commute (nu kbfc) gmz t ⟩
+                  (F₁ (GEFF kbfc) gmz ∘K η (nu kbfc) T) t
+                    ≡⟨ left-eq-helper ⟩
+                  mPure gmz
+                ∎
         
               eval = λ (mgmx : MGMX) → mApply (λ gmx → mPure (gmx t)) mgmx
               
@@ -1033,16 +1030,28 @@ The main result is encoded in `enforcing-purity-implies-pure-unit-eq`.
       ⊤-is-singleton t t = refl
       
       lhs-eq : μT (mApply (mPure • mPure) mt) ≡ mt
-      lhs-eq = 
-        trans (*-sym-assoc {x = T} {y = MT} {z = T}
-          {k = λ x → mPure (mPure x)} {l = λ _ → mPure t} mt) 
-            (trans (cong (λ f → mApply f mt) (funext lhs-inner)) 
-              (trans (cong (λ f → mApply f mt) (funext (λ (x : T) →
-                cong mPure (⊤-is-singleton t x)))) (*-identityˡ {T} mt)))
+      lhs-eq = begin
+        μT (mApply (mPure • mPure) mt)
+          ≡⟨ *-sym-assoc {x = T} {y = MT} {z = T}
+               {k = λ x → mPure (mPure x)} {l = λ _ → mPure t} mt ⟩
+        mApply (λ x → μT (mPure (mPure x))) mt
+          ≡⟨ cong (λ f → mApply f mt) (funext lhs-inner) ⟩
+        mApply (λ x → mPure t) mt
+          ≡⟨ cong (λ f → mApply f mt) (funext (λ (x : T) → cong mPure (⊤-is-singleton t x))) ⟩
+        mApply mPure mt
+          ≡⟨ *-identityˡ {T} mt ⟩
+        mt
+        ∎
       
-    in trans (sym lhs-eq) 
-        (trans (cong μT (enforcingPurity ep mt)) 
-           (*-identityʳ {x = MT} {y = T} {k = λ _ → mPure t} mt))
+    in begin
+      mt
+        ≡⟨ sym lhs-eq ⟩
+      μT (mApply (mPure • mPure) mt)
+        ≡⟨ cong μT (enforcingPurity ep mt) ⟩
+      μT (mPure mt)
+        ≡⟨ *-identityʳ {x = MT} {y = T} {k = λ _ → mPure t} mt ⟩
+      mPure t
+    ∎
 ```
 
 Purity boils down to `MF₀ (Lift ℓ ⊤)` being a `Singleton` which is the same as `MF₀` being a
