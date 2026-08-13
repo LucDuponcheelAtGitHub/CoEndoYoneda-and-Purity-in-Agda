@@ -858,35 +858,31 @@ We `postulate` this heterogeneous equality as the structural uniqueness principl
         
               eval = λ (mgmx : MGMX) → mApply (λ gmx → mPure (gmx t)) mgmx
               
-              step1 : eval (mApply (η (nu kbfc) X) mx) ≡ eval (mPure gmx)
-              step1 = cong eval (sigma-eval-lemma mx)
-              
-              step2 : eval (mPure gmx) ≡ mPure mx
-              step2 = *-identityʳ {k = λ g → mPure (g t)} gmx
-              
-              step3 : eval (mApply (η (nu kbfc) X) mx) ≡ mApply (mPure • mPure) mx
-              step3 = begin
-                mApply (λ g → mPure (g t)) (mApply (η (nu kbfc) X) mx)
-                  ≡⟨ sym 
-                      (*-assoc {k = η (nu kbfc) X} {l = λ g → mPure (g t)} mx) ⟩
-                mApply (λ x → mApply (λ g → mPure (g t)) (η (nu kbfc) X x)) mx
-                  ≡⟨ cong (λ k → mApply k mx) (funext (λ x → 
-                       let
-                         inner = sigma-eval-lemma (mPure x)
-                         inner-eval :
-                          eval (mApply (η (nu kbfc) X) (mPure x)) ≡ 
-                            eval (mPure (λ _ → mPure x))
-                         inner-eval = cong eval inner
-                         inner-eval2 : eval (mPure (λ _ → mPure x)) ≡ mPure (mPure x)
-                         inner-eval2 = *-identityʳ {k = λ g → mPure (g t)} (λ _ → mPure x)
-                         inner-eval3 :
-                           eval (mApply (η (nu kbfc) X) (mPure x)) ≡ eval (η (nu kbfc) X x)
-                         inner-eval3 = cong eval (*-identityʳ {k = η (nu kbfc) X} x)
-                       in trans (sym inner-eval3) (trans inner-eval inner-eval2)
-                     )) ⟩
-                mApply (λ x → mPure (mPure x)) mx
-                  ∎
-            in trans (mPure-mMap-eq mx) (trans (sym step3) (trans step1 step2))
+              idempotent-lemma : ∀ x → 
+                mApply (λ g → mPure (g t)) (η (nu kbfc) X x) ≡ mPure (mPure x)
+              idempotent-lemma x = begin
+                eval (η (nu kbfc) X x)
+                  ≡⟨ sym (cong eval (*-identityʳ {k = η (nu kbfc) X} x)) ⟩
+                eval (mApply (η (nu kbfc) X) (mPure x))
+                  ≡⟨ cong eval (sigma-eval-lemma (mPure x)) ⟩
+                eval (mPure (λ _ → mPure x))
+                  ≡⟨ *-identityʳ {k = λ g → mPure (g t)} (λ _ → mPure x) ⟩
+                mPure (mPure x)
+                ∎
+            in begin
+              mMap mPure mx
+                ≡⟨ mPure-mMap-eq mx ⟩
+              mApply (mPure • mPure) mx
+                ≡⟨ sym (cong (λ k → mApply k mx)
+                         (funext (λ x → idempotent-lemma x))) ⟩
+              mApply (λ x → mApply (λ g → mPure (g t)) (η (nu kbfc) X x)) mx
+                ≡⟨ *-assoc {k = η (nu kbfc) X} {l = λ g → mPure (g t)} mx ⟩
+              eval (mApply (η (nu kbfc) X) mx)
+                ≡⟨ cong eval (sigma-eval-lemma mx) ⟩
+              eval (mPure gmx)
+                ≡⟨ *-identityʳ {k = λ g → mPure (g t)} gmx ⟩
+              mPure mx
+            ∎
         }
     ; from = λ i → 
         let
