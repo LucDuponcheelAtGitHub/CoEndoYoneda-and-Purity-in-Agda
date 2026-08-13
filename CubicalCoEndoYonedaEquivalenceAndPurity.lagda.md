@@ -278,6 +278,19 @@ record CoEndoYonedaEquivalence
     ggfx2τx-η : fst (GG.F-ob (F.F-ob X)) → ∀ Y → C.Hom[ CYEF.F-ob Y , G.F-ob (F.F-ob Y) ]
     ggfx2τx-η ggfx Y = (FF.F-hom (λ f → ggfx ⋆ G.F-hom (F.F-hom f))) ⋆ ηm (F.F-ob Y)
 
+    ggfx2τx-commute-lemma : 
+      ∀ (ggfx : fst (GG.F-ob (F.F-ob X))) {Y Z : C.ob} (f : C.Hom[ Y , Z ]) (g : C.Hom[ X , Y ]) →
+        ggfx ⋆ G.F-hom (F.F-hom (g ⋆ f)) ≡ (ggfx ⋆ G.F-hom (F.F-hom g)) ⋆ G.F-hom (F.F-hom f)
+    ggfx2τx-commute-lemma ggfx {Y} {Z} f g = 
+      ggfx ⋆ G.F-hom (F.F-hom (g ⋆ f))
+        ≡⟨ cong (λ k → ggfx ⋆ k) (cong G.F-hom (F.F-seq g f)) ⟩
+      ggfx ⋆ G.F-hom (F.F-hom g ⋆ F.F-hom f)
+        ≡⟨ cong (λ k → ggfx ⋆ k) (G.F-seq (F.F-hom g) (F.F-hom f)) ⟩
+      ggfx ⋆ (G.F-hom (F.F-hom g) ⋆ G.F-hom (F.F-hom f))
+        ≡⟨ sym (C.⋆Assoc ggfx (G.F-hom (F.F-hom g)) (G.F-hom (F.F-hom f))) ⟩
+      (ggfx ⋆ G.F-hom (F.F-hom g)) ⋆ G.F-hom (F.F-hom f)
+        ∎
+
     ggfx2τx-commute : 
       ∀ (ggfx : fst (GG.F-ob (F.F-ob X))) {Y Z : C.ob} (f : C.Hom[ Y , Z ]) → 
         CYEF.F-hom f ⋆ ggfx2τx-η ggfx Z ≡ ggfx2τx-η ggfx Y ⋆ G.F-hom (F.F-hom f)
@@ -288,58 +301,38 @@ record CoEndoYonedaEquivalence
         B_Y = FF.F-hom (λ g → ggfx ⋆ G.F-hom (F.F-hom g))
         C_f = FF.F-hom (λ u → u ⋆ G.F-hom (F.F-hom f))
         
-        step1 : A ⋆ (B_Z ⋆ ηm (F.F-ob Z)) ≡ (A ⋆ B_Z) ⋆ ηm (F.F-ob Z)
-        step1 = sym (C.⋆Assoc A B_Z (ηm (F.F-ob Z)))
         
-        step2 : A ⋆ B_Z ≡ FF.F-hom (λ g → ggfx ⋆ G.F-hom (F.F-hom (g ⋆ f)))
-        step2 = sym (FF.F-seq (λ g → g ⋆ f) (λ h → ggfx ⋆ G.F-hom (F.F-hom h)))
         
         step3 : FF.F-hom (λ g → ggfx ⋆ G.F-hom (F.F-hom (g ⋆ f))) ≡ 
                 FF.F-hom (λ g → (ggfx ⋆ G.F-hom (F.F-hom g)) ⋆ G.F-hom (F.F-hom f))
         step3 = cong FF.F-hom (funExt (λ g → 
-                  let 
-                    inner1 : F.F-hom (g ⋆ f) ≡ F.F-hom g ⋆ F.F-hom f
-                    inner1 = F.F-seq g f
-                    
-                    inner2 : G.F-hom (F.F-hom (g ⋆ f)) ≡ G.F-hom (F.F-hom g ⋆ F.F-hom f)
-                    inner2 = cong G.F-hom inner1
-                    
-                    inner3 : G.F-hom (F.F-hom g ⋆ F.F-hom f) ≡ G.F-hom (F.F-hom g) ⋆ G.F-hom (F.F-hom f)
-                    inner3 = G.F-seq (F.F-hom g) (F.F-hom f)
-                    
-                    inner4 : ggfx ⋆ G.F-hom (F.F-hom (g ⋆ f)) ≡ ggfx ⋆ (G.F-hom (F.F-hom g) ⋆ G.F-hom (F.F-hom f))
-                    inner4 = cong (λ k → ggfx ⋆ k) (inner2 ∙ inner3)
-                    
-                    inner5 : ggfx ⋆ (G.F-hom (F.F-hom g) ⋆ G.F-hom (F.F-hom f)) ≡ (ggfx ⋆ G.F-hom (F.F-hom g)) ⋆ G.F-hom (F.F-hom f)
-                    inner5 = sym (C.⋆Assoc ggfx (G.F-hom (F.F-hom g)) (G.F-hom (F.F-hom f)))
-                  in inner4 ∙ inner5))
+                  ggfx ⋆ G.F-hom (F.F-hom (g ⋆ f))
+                    ≡⟨ cong (λ k → ggfx ⋆ k) (cong G.F-hom (F.F-seq g f)) ⟩
+                  ggfx ⋆ G.F-hom (F.F-hom g ⋆ F.F-hom f)
+                    ≡⟨ cong (λ k → ggfx ⋆ k) (G.F-seq (F.F-hom g) (F.F-hom f)) ⟩
+                  ggfx ⋆ (G.F-hom (F.F-hom g) ⋆ G.F-hom (F.F-hom f))
+                    ≡⟨ sym (C.⋆Assoc ggfx (G.F-hom (F.F-hom g)) (G.F-hom (F.F-hom f))) ⟩
+                  (ggfx ⋆ G.F-hom (F.F-hom g)) ⋆ G.F-hom (F.F-hom f)
+                    ∎))
         
-        step4 : FF.F-hom (λ g → (ggfx ⋆ G.F-hom (F.F-hom g)) ⋆ G.F-hom (F.F-hom f)) ≡ B_Y ⋆ C_f
-        step4 = FF.F-seq (λ g → ggfx ⋆ G.F-hom (F.F-hom g)) (λ u → u ⋆ G.F-hom (F.F-hom f))
         
-        step5 : (B_Y ⋆ C_f) ⋆ ηm (F.F-ob Z) ≡ B_Y ⋆ (C_f ⋆ ηm (F.F-ob Z))
-        step5 = C.⋆Assoc B_Y C_f (ηm (F.F-ob Z))
         
-        step6 : C_f ⋆ ηm (F.F-ob Z) ≡ ηm (F.F-ob Y) ⋆ G.F-hom (F.F-hom f)
-        step6 = N-hom mu (F.F-hom f)
         
-        step7 : B_Y ⋆ (ηm (F.F-ob Y) ⋆ G.F-hom (F.F-hom f)) ≡ (B_Y ⋆ ηm (F.F-ob Y)) ⋆ G.F-hom (F.F-hom f)
-        step7 = sym (C.⋆Assoc B_Y (ηm (F.F-ob Y)) (G.F-hom (F.F-hom f)))
       in 
         A ⋆ (B_Z ⋆ ηm (F.F-ob Z))
-          ≡⟨ step1 ⟩
+          ≡⟨ sym (C.⋆Assoc A B_Z (ηm (F.F-ob Z))) ⟩
         (A ⋆ B_Z) ⋆ ηm (F.F-ob Z)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Z)) step2 ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Z)) (sym (FF.F-seq (λ g → g ⋆ f) (λ h → ggfx ⋆ G.F-hom (F.F-hom h)))) ⟩
         FF.F-hom (λ g → ggfx ⋆ G.F-hom (F.F-hom (g ⋆ f))) ⋆ ηm (F.F-ob Z)
           ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Z)) step3 ⟩
         FF.F-hom (λ g → (ggfx ⋆ G.F-hom (F.F-hom g)) ⋆ G.F-hom (F.F-hom f)) ⋆ ηm (F.F-ob Z)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Z)) step4 ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Z)) (FF.F-seq (λ g → ggfx ⋆ G.F-hom (F.F-hom g)) (λ u → u ⋆ G.F-hom (F.F-hom f))) ⟩
         (B_Y ⋆ C_f) ⋆ ηm (F.F-ob Z)
-          ≡⟨ step5 ⟩
+          ≡⟨ C.⋆Assoc B_Y C_f (ηm (F.F-ob Z)) ⟩
         B_Y ⋆ (C_f ⋆ ηm (F.F-ob Z))
-          ≡⟨ cong (λ k → B_Y ⋆ k) step6 ⟩
+          ≡⟨ cong (λ k → B_Y ⋆ k) (N-hom mu (F.F-hom f)) ⟩
         B_Y ⋆ (ηm (F.F-ob Y) ⋆ G.F-hom (F.F-hom f))
-          ≡⟨ step7 ⟩
+          ≡⟨ sym (C.⋆Assoc B_Y (ηm (F.F-ob Y)) (G.F-hom (F.F-hom f))) ⟩
         (B_Y ⋆ ηm (F.F-ob Y)) ⋆ G.F-hom (F.F-hom f)
           ∎
 
@@ -349,92 +342,60 @@ record CoEndoYonedaEquivalence
       ; N-hom = λ f → ggfx2τx-commute ggfx f
       }
 
+    to_from-proof-lemma1 : ∀ (ggfx : fst (GG.F-ob (F.F-ob X))) → 
+      ggfx ⋆ G.F-hom (F.F-hom C.id) ≡ ggfx ⋆ C.id
+    to_from-proof-lemma1 ggfx = 
+      ggfx ⋆ G.F-hom (F.F-hom C.id)
+        ≡⟨ cong (λ k → ggfx ⋆ G.F-hom k) F.F-id ⟩
+      ggfx ⋆ G.F-hom C.id
+        ≡⟨ cong (λ k → ggfx ⋆ k) G.F-id ⟩
+      ggfx ⋆ C.id
+        ∎
+
+    to_from-proof-lemma2 : ∀ (t : fst T) →
+      FF.F-hom (λ (_ : fst T) → t) ≡ C.id
+    to_from-proof-lemma2 t = 
+      FF.F-hom (λ _ → t) 
+        ≡⟨ cong FF.F-hom (funExt (λ x → refl)) ⟩
+      FF.F-hom (λ x → x)
+        ≡⟨ FF.F-id ⟩
+      C.id
+        ∎
+
     to_from-proof : ∀ (ggfx : fst (GG.F-ob (F.F-ob X))) → τx2ggfx (ggfx2τx ggfx) ≡ ggfx
     to_from-proof ggfx = 
       let
         A = FF.F-hom (λ _ → C.id)
         B = FF.F-hom (λ f → ggfx ⋆ G.F-hom (F.F-hom f))
-        
-        step1 : (A ⋆ B) ⋆ ηm (F.F-ob X) ≡ τx2ggfx (ggfx2τx ggfx)
-        step1 = C.⋆Assoc A B (ηm (F.F-ob X))
-        
-        step2 : A ⋆ B ≡ FF.F-hom (λ x → ggfx ⋆ G.F-hom (F.F-hom C.id))
-        step2 = sym (FF.F-seq (λ _ → C.id) (λ f → ggfx ⋆ G.F-hom (F.F-hom f)))
-        
-        step3 : FF.F-hom (λ x → ggfx ⋆ G.F-hom (F.F-hom C.id)) ≡ FF.F-hom (λ _ → ggfx ⋆ C.id)
-        step3 = cong FF.F-hom (funExt (λ _ → cong (λ k → ggfx ⋆ G.F-hom k) F.F-id ∙ cong (λ k → ggfx ⋆ k) G.F-id))
-        
-        step4 : FF.F-hom (λ _ → ggfx ⋆ C.id) ≡ FF.F-hom (λ _ → ggfx)
-        step4 = cong FF.F-hom (funExt (λ _ → C.⋆IdR ggfx))
-        
-        step5 : FF.F-hom (λ _ → ggfx) ≡ FF.F-hom (λ t → C.id ⋆ ggfx)
-        step5 = cong FF.F-hom (funExt (λ _ → sym (C.⋆IdL ggfx)))
-        
-        step6 : FF.F-hom (λ t → C.id ⋆ ggfx) ≡ FF.F-hom (λ t → FF.F-hom (λ _ → t) ⋆ ggfx)
-        step6 = cong FF.F-hom (funExt (λ t → cong (λ k → k ⋆ ggfx) (sym (
-                  let 
-                    inner1 : (λ (_ : fst T) → t) ≡ (λ x → x)
-                    inner1 = funExt (λ x → refl)
-                    inner2 : FF.F-hom (λ _ → t) ≡ FF.F-hom (λ x → x)
-                    inner2 = cong FF.F-hom inner1
-                    inner3 : FF.F-hom (λ x → x) ≡ C.id
-                    inner3 = FF.F-id
-                  in inner2 ∙ inner3
-                ))))
-        
-        step7 : FF.F-hom (λ t → FF.F-hom (λ _ → t) ⋆ ggfx) ≡ FF.F-hom (λ t → FF.F-hom (λ _ → t)) ⋆ G.F-hom ggfx
-        step7 = FF.F-seq (λ t → FF.F-hom (λ _ → t)) (λ k → k ⋆ ggfx)
-        
-        step8 : (FF.F-hom (λ t → FF.F-hom (λ _ → t)) ⋆ G.F-hom ggfx) ⋆ ηm (F.F-ob X) ≡ 
-                FF.F-hom (λ t → FF.F-hom (λ _ → t)) ⋆ (G.F-hom ggfx ⋆ ηm (F.F-ob X))
-        step8 = C.⋆Assoc (FF.F-hom (λ t → FF.F-hom (λ _ → t))) (G.F-hom ggfx) (ηm (F.F-ob X))
-        
-        step9 : FF.F-hom (λ t → FF.F-hom (λ _ → t)) ≡ ηu FFT
-        step9 = sym nu-eq-T
-        
-        step10 : ηu FFT ⋆ (G.F-hom ggfx ⋆ ηm (F.F-ob X)) ≡ (ηu FFT ⋆ G.F-hom ggfx) ⋆ ηm (F.F-ob X)
-        step10 = sym (C.⋆Assoc (ηu FFT) (G.F-hom ggfx) (ηm (F.F-ob X)))
-        
-        step11 : ηu FFT ⋆ G.F-hom ggfx ≡ ggfx ⋆ ηu (G.F-ob (F.F-ob X))
-        step11 = sym (N-hom nu ggfx)
-        
-        step12 : (ggfx ⋆ ηu (G.F-ob (F.F-ob X))) ⋆ ηm (F.F-ob X) ≡ ggfx ⋆ (ηu (G.F-ob (F.F-ob X)) ⋆ ηm (F.F-ob X))
-        step12 = C.⋆Assoc ggfx (ηu (G.F-ob (F.F-ob X))) (ηm (F.F-ob X))
-        
-        step13 : ηu (G.F-ob (F.F-ob X)) ⋆ ηm (F.F-ob X) ≡ C.id
-        step13 = monad-idˡ
-        
-        step14 : ggfx ⋆ C.id ≡ ggfx
-        step14 = C.⋆IdR ggfx
       in 
         τx2ggfx (ggfx2τx ggfx)
-          ≡⟨ sym step1 ⟩
+          ≡⟨ sym (C.⋆Assoc A B (ηm (F.F-ob X))) ⟩
         (A ⋆ B) ⋆ ηm (F.F-ob X)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) step2 ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) (sym (FF.F-seq (λ _ → C.id) (λ f → ggfx ⋆ G.F-hom (F.F-hom f)))) ⟩
         FF.F-hom (λ x → ggfx ⋆ G.F-hom (F.F-hom C.id)) ⋆ ηm (F.F-ob X)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) step3 ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) (cong FF.F-hom (funExt (λ _ → to_from-proof-lemma1 ggfx))) ⟩
         FF.F-hom (λ _ → ggfx ⋆ C.id) ⋆ ηm (F.F-ob X)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) step4 ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) (cong FF.F-hom (funExt (λ _ → C.⋆IdR ggfx))) ⟩
         FF.F-hom (λ _ → ggfx) ⋆ ηm (F.F-ob X)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) step5 ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) (cong FF.F-hom (funExt (λ _ → sym (C.⋆IdL ggfx)))) ⟩
         FF.F-hom (λ t → C.id ⋆ ggfx) ⋆ ηm (F.F-ob X)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) step6 ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) (cong FF.F-hom (funExt (λ t → cong (λ k → k ⋆ ggfx) (sym (to_from-proof-lemma2 t))))) ⟩
         FF.F-hom (λ t → FF.F-hom (λ _ → t) ⋆ ggfx) ⋆ ηm (F.F-ob X)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) step7 ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) (FF.F-seq (λ t → FF.F-hom (λ _ → t)) (λ k → k ⋆ ggfx)) ⟩
         (FF.F-hom (λ t → FF.F-hom (λ _ → t)) ⋆ G.F-hom ggfx) ⋆ ηm (F.F-ob X)
-          ≡⟨ step8 ⟩
+          ≡⟨ C.⋆Assoc (FF.F-hom (λ t → FF.F-hom (λ _ → t))) (G.F-hom ggfx) (ηm (F.F-ob X)) ⟩
         FF.F-hom (λ t → FF.F-hom (λ _ → t)) ⋆ (G.F-hom ggfx ⋆ ηm (F.F-ob X))
-          ≡⟨ cong (λ k → k ⋆ (G.F-hom ggfx ⋆ ηm (F.F-ob X))) step9 ⟩
+          ≡⟨ cong (λ k → k ⋆ (G.F-hom ggfx ⋆ ηm (F.F-ob X))) (sym nu-eq-T) ⟩
         ηu FFT ⋆ (G.F-hom ggfx ⋆ ηm (F.F-ob X))
-          ≡⟨ step10 ⟩
+          ≡⟨ sym (C.⋆Assoc (ηu FFT) (G.F-hom ggfx) (ηm (F.F-ob X))) ⟩
         (ηu FFT ⋆ G.F-hom ggfx) ⋆ ηm (F.F-ob X)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) step11 ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) (sym (N-hom nu ggfx)) ⟩
         (ggfx ⋆ ηu (G.F-ob (F.F-ob X))) ⋆ ηm (F.F-ob X)
-          ≡⟨ step12 ⟩
+          ≡⟨ C.⋆Assoc ggfx (ηu (G.F-ob (F.F-ob X))) (ηm (F.F-ob X)) ⟩
         ggfx ⋆ (ηu (G.F-ob (F.F-ob X)) ⋆ ηm (F.F-ob X))
-          ≡⟨ cong (λ k → ggfx ⋆ k) step13 ⟩
+          ≡⟨ cong (λ k → ggfx ⋆ k) monad-idˡ ⟩
         ggfx ⋆ C.id
-          ≡⟨ step14 ⟩
+          ≡⟨ C.⋆IdR ggfx ⟩
         ggfx
           ∎
 
@@ -596,28 +557,33 @@ module PurityTheorems {ℓ : Level} (M : MonadOnSets {ℓ}) where
               
               eval : fst (F₀ (F-ob GEFF X)) → fst (F₀ (F₀ X))
               eval mg = mApply {F-ob GEFF X} {F₀ X} (λ g → mPure {F₀ X} (g t)) mg
-              
-              step1 : eval (mApply {X} {F-ob GEFF X} (N-ob nu X) mx) ≡ eval (mPure {F-ob GEFF X} (λ _ → mx))
-              step1 = cong eval (sigma-eval-lemma {X} mx)
-              
-              step2 : eval (mPure {F-ob GEFF X} (λ _ → mx)) ≡ mPure {F₀ X} mx
-              step2 = mApply-pure {F-ob GEFF X} {F₀ X} {f = λ g → mPure {F₀ X} (g t)}
-              
-              step3 : eval (mApply {X} {F-ob GEFF X} (N-ob nu X) mx) ≡ mApply {X} {F₀ X} (λ z → mPure {F₀ X} (mPure {X} z)) mx
-              step3 = mApply {F-ob GEFF X} {F₀ X} (λ g → mPure {F₀ X} (g t)) (mApply {X} {F-ob GEFF X} (N-ob nu X) mx)
-                  ≡⟨ mApply-assoc {X} {F-ob GEFF X} {F₀ X} ⟩
-                mApply {X} {F₀ X} (λ x → mApply {F-ob GEFF X} {F₀ X} (λ g → mPure {F₀ X} (g t)) (N-ob nu X x)) mx
-                  ≡⟨ cong (λ k → mApply {X} {F₀ X} k mx) (funExt (λ x → 
-                       let
-                         inner = sigma-eval-lemma {X} (mPure {X} x)
-                         inner-eval = cong eval inner
-                         inner-eval2 = mApply-pure {F-ob GEFF X} {F₀ X} {f = λ g → mPure {F₀ X} (g t)}
-                         inner-eval3 = cong eval (mApply-pure {X} {F-ob GEFF X} {f = N-ob nu X})
-                       in sym inner-eval3 ∙ (inner-eval ∙ inner-eval2)
-                     )) ⟩
-                mApply {X} {F₀ X} (λ x → mPure {F₀ X} (mPure {X} x)) mx
+
+              idempotent-lemma : (x : fst X) → 
+                mApply {F-ob GEFF X} {F₀ X} (λ g → mPure {F₀ X} (g t)) (N-ob nu X x) ≡ mPure {F₀ X} (mPure {X} x)
+              idempotent-lemma x = 
+                mApply {F-ob GEFF X} {F₀ X} (λ g → mPure {F₀ X} (g t)) (N-ob nu X x)
+                  ≡⟨ sym (cong eval (mApply-pure {X} {F-ob GEFF X} {f = N-ob nu X})) ⟩
+                eval (mApply {X} {F-ob GEFF X} (N-ob nu X) (mPure {X} x))
+                  ≡⟨ cong eval (sigma-eval-lemma {X} (mPure {X} x)) ⟩
+                eval (mPure {F-ob GEFF X} (λ _ → mPure {X} x))
+                  ≡⟨ mApply-pure {F-ob GEFF X} {F₀ X} {f = λ g → mPure {F₀ X} (g t)} ⟩
+                mPure {F₀ X} (mPure {X} x)
                   ∎
-            in mPure-mMap-eq {X} mx ∙ (sym step3 ∙ (step1 ∙ step2))
+
+
+            in 
+              mMap {X} {F₀ X} (mPure {X}) mx
+                ≡⟨ mPure-mMap-eq {X} mx ⟩
+              mApply {X} {F₀ X} (λ x → mPure {F₀ X} (mPure {X} x)) mx
+                ≡⟨ sym (cong (λ k → mApply {X} {F₀ X} k mx) (funExt (λ x → idempotent-lemma x))) ⟩
+              mApply {X} {F₀ X} (λ x → mApply {F-ob GEFF X} {F₀ X} (λ g → mPure {F₀ X} (g t)) (N-ob nu X x)) mx
+                ≡⟨ sym (mApply-assoc {X} {F-ob GEFF X} {F₀ X}) ⟩
+              eval (mApply {X} {F-ob GEFF X} (N-ob nu X) mx)
+                ≡⟨ cong eval (sigma-eval-lemma {X} mx) ⟩
+              eval (mPure {F-ob GEFF X} (λ _ → mx))
+                ≡⟨ mApply-pure {F-ob GEFF X} {F₀ X} {f = λ g → mPure {F₀ X} (g t)} ⟩
+              mPure {F₀ X} mx
+                ∎
         }
     ; from = λ idem → 
         let
@@ -663,16 +629,15 @@ module PurityTheorems {ℓ : Level} (M : MonadOnSets {ℓ}) where
               f-lemma : fst (GM X) → fst (F₀ (GM Y))
               f-lemma z = mPure {GM Y} (λ u → mApply {X} {Y} gmx2mx (z u))
               
-              comm-lhs :
-                mApply {GM X} {GM Y} f-lemma (mPure {GM X} (λ _ → mPure {X} x)) ≡ 
-                  mPure {GM Y} (λ _ → gmx2mx x)
-              comm-lhs = mApply {GM X} {GM Y} f-lemma (mPure {GM X} (λ _ → mPure {X} x))
-                  ≡⟨ mApply-pure {GM X} {GM Y} {f = f-lemma} ⟩
-                mPure {GM Y} (λ u → mApply {X} {Y} gmx2mx (mPure {X} x))
-                  ≡⟨ cong (λ k → mPure {GM Y} (λ _ → k)) (mApply-pure {X} {Y} {f = gmx2mx}) ⟩
-                mPure {GM Y} (λ _ → gmx2mx x)
-                  ∎
-            in sym (comm-lhs ∙ sym (σ-mApply-lemma {Y} (gmx2mx x)))
+            in 
+              mApply {Y} {GM Y} (λ z → mPure {GM Y} (λ _ → mPure {Y} z)) (gmx2mx x)
+                ≡⟨ σ-mApply-lemma {Y} (gmx2mx x) ⟩
+              mPure {GM Y} (λ _ → gmx2mx x)
+                ≡⟨ sym (cong (λ k → mPure {GM Y} (λ _ → k)) (mApply-pure {X} {Y} {f = gmx2mx})) ⟩
+              mPure {GM Y} (λ u → mApply {X} {Y} gmx2mx (mPure {X} x))
+                ≡⟨ sym (mApply-pure {GM X} {GM Y} {f = f-lemma}) ⟩
+              mApply {GM X} {GM Y} f-lemma (mPure {GM X} (λ _ → mPure {X} x))
+                ∎
         in
         record { nu = record 
                   { N-ob = λ X x → mPure {GM X} (λ _ → mPure {X} x)
