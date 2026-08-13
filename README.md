@@ -1,6 +1,16 @@
 # CoEndoYoneda Equivalence and Purity
 
-See [documentation and code](https://github.com/LucDuponcheelAtGitHub/CoEndoYoneda-and-Purity-in-Agda/blob/main/CoEndoYonedaEquivalenceAndPurity.lagda.md).
+See [documentation and Agda code](https://github.com/LucDuponcheelAtGitHub/CoEndoYoneda-and-Purity-in-Agda/blob/main/CoEndoYonedaEquivalenceAndPurity.lagda.md).
+
+This file uses `strict` and contains `postulate`s.
+
+See [documentation and Cubical Agda code](https://github.com/LucDuponcheelAtGitHub/CoEndoYoneda-and-Purity-in-Agda/blob/main/CubicalCoEndoYonedaEquivalenceAndPurity.lagda.md).
+
+This file does not use `strict` and does not contain `postulate`s.
+
+Both files are work in progress.
+
+## In short
 
 I proved a CoEndoYoneda equivalence theorem, that generalizes the well known one for the
 category of sets and functions.

@@ -279,7 +279,8 @@ record CoEndoYonedaEquivalence
     ggfx2τx-η ggfx Y = (FF.F-hom (λ f → ggfx ⋆ G.F-hom (F.F-hom f))) ⋆ ηm (F.F-ob Y)
 
     ggfx2τx-commute-lemma : 
-      ∀ (ggfx : fst (GG.F-ob (F.F-ob X))) {Y Z : C.ob} (f : C.Hom[ Y , Z ]) (g : C.Hom[ X , Y ]) →
+      ∀ (ggfx : fst (GG.F-ob (F.F-ob X))) {Y Z : C.ob} (f : C.Hom[ Y , Z ])
+          (g : C.Hom[ X , Y ]) →
         ggfx ⋆ G.F-hom (F.F-hom (g ⋆ f)) ≡ (ggfx ⋆ G.F-hom (F.F-hom g)) ⋆ G.F-hom (F.F-hom f)
     ggfx2τx-commute-lemma ggfx {Y} {Z} f g = 
       ggfx ⋆ G.F-hom (F.F-hom (g ⋆ f))
@@ -301,17 +302,18 @@ record CoEndoYonedaEquivalence
         B_Y = FF.F-hom (λ g → ggfx ⋆ G.F-hom (F.F-hom g))
         C_f = FF.F-hom (λ u → u ⋆ G.F-hom (F.F-hom f))
         
-        
-        
       in 
         A ⋆ (B_Z ⋆ ηm (F.F-ob Z))
           ≡⟨ sym (C.⋆Assoc A B_Z (ηm (F.F-ob Z))) ⟩
         (A ⋆ B_Z) ⋆ ηm (F.F-ob Z)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Z)) (sym (FF.F-seq (λ g → g ⋆ f) (λ h → ggfx ⋆ G.F-hom (F.F-hom h)))) ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Z)) 
+              (sym (FF.F-seq (λ g → g ⋆ f) (λ h → ggfx ⋆ G.F-hom (F.F-hom h)))) ⟩
         FF.F-hom (λ g → ggfx ⋆ G.F-hom (F.F-hom (g ⋆ f))) ⋆ ηm (F.F-ob Z)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Z)) (cong FF.F-hom (funExt (λ g → ggfx2τx-commute-lemma ggfx f g))) ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Z)) 
+          (cong FF.F-hom (funExt (λ g → ggfx2τx-commute-lemma ggfx f g))) ⟩
         FF.F-hom (λ g → (ggfx ⋆ G.F-hom (F.F-hom g)) ⋆ G.F-hom (F.F-hom f)) ⋆ ηm (F.F-ob Z)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Z)) (FF.F-seq (λ g → ggfx ⋆ G.F-hom (F.F-hom g)) (λ u → u ⋆ G.F-hom (F.F-hom f))) ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Z))
+              (FF.F-seq (λ g → ggfx ⋆ G.F-hom (F.F-hom g)) (λ u → u ⋆ G.F-hom (F.F-hom f))) ⟩
         (B_Y ⋆ C_f) ⋆ ηm (F.F-ob Z)
           ≡⟨ C.⋆Assoc B_Y C_f (ηm (F.F-ob Z)) ⟩
         B_Y ⋆ (C_f ⋆ ηm (F.F-ob Z))
@@ -356,17 +358,23 @@ record CoEndoYonedaEquivalence
         τx2ggfx (ggfx2τx ggfx)
           ≡⟨ sym (C.⋆Assoc A B (ηm (F.F-ob X))) ⟩
         (A ⋆ B) ⋆ ηm (F.F-ob X)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) (sym (FF.F-seq (λ _ → C.id) (λ f → ggfx ⋆ G.F-hom (F.F-hom f)))) ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) 
+              (sym (FF.F-seq (λ _ → C.id) (λ f → ggfx ⋆ G.F-hom (F.F-hom f)))) ⟩
         FF.F-hom (λ x → ggfx ⋆ G.F-hom (F.F-hom C.id)) ⋆ ηm (F.F-ob X)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) (cong FF.F-hom (funExt (λ _ → to_from-proof-lemma1 ggfx))) ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X))
+              (cong FF.F-hom (funExt (λ _ → to_from-proof-lemma1 ggfx))) ⟩
         FF.F-hom (λ _ → ggfx ⋆ C.id) ⋆ ηm (F.F-ob X)
           ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) (cong FF.F-hom (funExt (λ _ → C.⋆IdR ggfx))) ⟩
         FF.F-hom (λ _ → ggfx) ⋆ ηm (F.F-ob X)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) (cong FF.F-hom (funExt (λ _ → sym (C.⋆IdL ggfx)))) ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) 
+              (cong FF.F-hom (funExt (λ _ → sym (C.⋆IdL ggfx)))) ⟩
         FF.F-hom (λ t → C.id ⋆ ggfx) ⋆ ηm (F.F-ob X)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) (cong FF.F-hom (funExt (λ t → cong (λ k → k ⋆ ggfx) (sym (to_from-proof-lemma2 t))))) ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) 
+              (cong FF.F-hom 
+                (funExt (λ t → cong (λ k → k ⋆ ggfx) (sym (to_from-proof-lemma2 t))))) ⟩
         FF.F-hom (λ t → FF.F-hom (λ _ → t) ⋆ ggfx) ⋆ ηm (F.F-ob X)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) (FF.F-seq (λ t → FF.F-hom (λ _ → t)) (λ k → k ⋆ ggfx)) ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) 
+              (FF.F-seq (λ t → FF.F-hom (λ _ → t)) (λ k → k ⋆ ggfx)) ⟩
         (FF.F-hom (λ t → FF.F-hom (λ _ → t)) ⋆ G.F-hom ggfx) ⋆ ηm (F.F-ob X)
           ≡⟨ C.⋆Assoc (FF.F-hom (λ t → FF.F-hom (λ _ → t))) (G.F-hom ggfx) (ηm (F.F-ob X)) ⟩
         FF.F-hom (λ t → FF.F-hom (λ _ → t)) ⋆ (G.F-hom ggfx ⋆ ηm (F.F-ob X))
@@ -384,7 +392,8 @@ record CoEndoYonedaEquivalence
         ggfx
           ∎
 
-    from_to-proof : ∀ (τx : NatTrans (CYEF X) (G ∘F F)) (Y : C.ob) → ggfx2τx-η (τx2ggfx τx) Y ≡ N-ob τx Y
+    from_to-proof : 
+      ∀ (τx : NatTrans (CYEF X) (G ∘F F)) (Y : C.ob) → ggfx2τx-η (τx2ggfx τx) Y ≡ N-ob τx Y
     from_to-proof τx Y = 
       let
         A : C.Hom[ FFT , CYEF.F-ob X ]
@@ -395,21 +404,32 @@ record CoEndoYonedaEquivalence
         C_f = λ f → G.F-hom (F.F-hom f)
       in
         FF.F-hom (λ f → (A ⋆ B) ⋆ C_f f) ⋆ ηm (F.F-ob Y)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) (cong FF.F-hom (funExt (λ f → C.⋆Assoc A B (C_f f)))) ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) 
+              (cong FF.F-hom (funExt (λ f → C.⋆Assoc A B (C_f f)))) ⟩
         FF.F-hom (λ f → A ⋆ (B ⋆ C_f f)) ⋆ ηm (F.F-ob Y)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) (cong FF.F-hom (funExt (λ f → cong (λ k → A ⋆ k) (sym (N-hom τx f))))) ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y))
+              (cong FF.F-hom (funExt (λ f → cong (λ k → A ⋆ k) (sym (N-hom τx f))))) ⟩
         FF.F-hom (λ f → A ⋆ (CYEF.F-hom f ⋆ N-ob τx Y)) ⋆ ηm (F.F-ob Y)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) (cong FF.F-hom (funExt (λ f → sym (C.⋆Assoc A (CYEF.F-hom f) (N-ob τx Y))))) ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) 
+              (cong FF.F-hom 
+                (funExt (λ f → sym (C.⋆Assoc A (CYEF.F-hom f) (N-ob τx Y))))) ⟩
         FF.F-hom (λ f → (A ⋆ CYEF.F-hom f) ⋆ N-ob τx Y) ⋆ ηm (F.F-ob Y)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) (cong FF.F-hom (funExt (λ f → cong (λ k → k ⋆ N-ob τx Y) (sym (FF.F-seq (λ _ → C.id) (λ g → g ⋆ f)))))) ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) 
+              (cong FF.F-hom (funExt 
+                (λ f → cong (λ k → k ⋆ N-ob τx Y) (sym (FF.F-seq (λ _ → C.id) (λ g → g ⋆ f)))))) ⟩
         FF.F-hom (λ f → FF.F-hom (λ _ → C.id ⋆ f) ⋆ N-ob τx Y) ⋆ ηm (F.F-ob Y)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) (cong FF.F-hom (funExt (λ f → cong (λ k → FF.F-hom {x = T} k ⋆ N-ob τx Y) (funExt (λ _ → C.⋆IdL f))))) ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) 
+              (cong FF.F-hom 
+                (funExt (λ f → 
+                  cong (λ k → FF.F-hom {x = T} k ⋆ N-ob τx Y) (funExt (λ _ → C.⋆IdL f))))) ⟩
         FF.F-hom (λ f → FF.F-hom (λ _ → f) ⋆ N-ob τx Y) ⋆ ηm (F.F-ob Y)
-          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) (FF.F-seq (λ f → FF.F-hom (λ _ → f)) (λ k → k ⋆ N-ob τx Y)) ⟩
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) 
+              (FF.F-seq (λ f → FF.F-hom (λ _ → f)) (λ k → k ⋆ N-ob τx Y)) ⟩
         (FF.F-hom (λ f → FF.F-hom (λ _ → f)) ⋆ G.F-hom (N-ob τx Y)) ⋆ ηm (F.F-ob Y)
           ≡⟨ C.⋆Assoc (FF.F-hom (λ f → FF.F-hom (λ _ → f))) (G.F-hom (N-ob τx Y)) (ηm (F.F-ob Y)) ⟩
         FF.F-hom (λ f → FF.F-hom (λ _ → f)) ⋆ (G.F-hom (N-ob τx Y) ⋆ ηm (F.F-ob Y))
-          ≡⟨ cong (λ k → k ⋆ (G.F-hom (N-ob τx Y) ⋆ ηm (F.F-ob Y))) (sym (nu-eq {W = CYF X .F-ob Y})) ⟩
+          ≡⟨ cong (λ k → k ⋆ (G.F-hom (N-ob τx Y) ⋆ ηm (F.F-ob Y))) 
+              (sym (nu-eq {W = CYF X .F-ob Y})) ⟩
         ηu (CYEF.F-ob Y) ⋆ (G.F-hom (N-ob τx Y) ⋆ ηm (F.F-ob Y))
           ≡⟨ sym (C.⋆Assoc (ηu (CYEF.F-ob Y)) (G.F-hom (N-ob τx Y)) (ηm (F.F-ob Y))) ⟩
         (ηu (CYEF.F-ob Y) ⋆ G.F-hom (N-ob τx Y)) ⋆ ηm (F.F-ob Y)
@@ -451,7 +471,8 @@ record MonadOnSets {ℓ : Level} : Type (lsuc ℓ) where
     mApply-assoc : 
       ∀ {X Y Z : hSet ℓ} {f : fst X → fst (F₀ Y)} {g : fst Y → fst (F₀ Z)} 
         {mx : fst (F₀ X)} →
-      mApply {Y} {Z} g (mApply {X} {Y} f mx) ≡ mApply {X} {Z} (λ x → mApply {Y} {Z} g (f x)) mx
+      mApply {Y} {Z} g (mApply {X} {Y} f mx) ≡ 
+        mApply {X} {Z} (λ x → mApply {Y} {Z} g (f x)) mx
     
   mMap : ∀ {X Y : hSet ℓ} → (fst X → fst Y) → fst (F₀ X) → fst (F₀ Y)
   mMap {X} {Y} f = mApply {X} {Y} (λ x → mPure {Y} (f x))
@@ -508,7 +529,8 @@ module PurityTheorems {ℓ : Level} (M : MonadOnSets {ℓ}) where
         mApply {X} {F₀ X} (λ x → mPure {F₀ X} (mPure {X} x)) mx
   mPure-mMap-eq {X} mx = refl
 
-  idempotent-equiv-kleisli-basic-functional-category : KleisliBasicFunctionalCategory ⇔ Idempotent
+  idempotent-equiv-kleisli-basic-functional-category : 
+    KleisliBasicFunctionalCategory ⇔ Idempotent
   idempotent-equiv-kleisli-basic-functional-category = record
     { to = λ kfc → record 
         { idempotent = λ {X} mx → 
@@ -521,19 +543,26 @@ module PurityTheorems {ℓ : Level} (M : MonadOnSets {ℓ}) where
                 let
                   f : fst T → fst (F₀ Z)
                   f = λ _ → mz
-                  nat-tt : mApply {Z} {F-ob GEFF Z} (N-ob nu Z) mz ≡ mApply {F-ob GEFF T} {F-ob GEFF Z} (F-hom GEFF f) (N-ob nu T t)
+                  nat-tt : 
+                    mApply {Z} {F-ob GEFF Z} (N-ob nu Z) mz ≡ 
+                      mApply {F-ob GEFF T} {F-ob GEFF Z} (F-hom GEFF f) (N-ob nu T t)
                   nat-tt = cong (λ H → H t) (N-hom nu f)
                   
-                  left-eq : mApply {F-ob GEFF T} {F-ob GEFF Z} (F-hom GEFF f) (N-ob nu T t) ≡ mPure {F-ob GEFF Z} (λ _ → mz)
+                  left-eq : 
+                    mApply {F-ob GEFF T} {F-ob GEFF Z} (F-hom GEFF f) (N-ob nu T t) ≡ 
+                      mPure {F-ob GEFF Z} (λ _ → mz)
                   left-eq = 
                     mApply {F-ob GEFF T} {F-ob GEFF Z} (F-hom GEFF f) (N-ob nu T t)
-                      ≡⟨ cong (λ k → mApply {F-ob GEFF T} {F-ob GEFF Z} (F-hom GEFF f) (k t)) nu-eq-T ⟩
-                    mApply {F-ob GEFF T} {F-ob GEFF Z} (F-hom GEFF f) (mPure {F-ob GEFF T} (λ _ → mPure {T} t))
+                      ≡⟨ cong (λ k → mApply {F-ob GEFF T} {F-ob GEFF Z} (F-hom GEFF f) (k t)) 
+                          nu-eq-T ⟩
+                    mApply {F-ob GEFF T} {F-ob GEFF Z} (F-hom GEFF f) 
+                      (mPure {F-ob GEFF T} (λ _ → mPure {T} t))
                       ≡⟨ mApply-pure {F-ob GEFF T} {F-ob GEFF Z} {f = F-hom GEFF f} ⟩
                     F-hom GEFF f (λ _ → mPure {T} t)
                       ≡⟨ refl ⟩
                     mPure {F-ob GEFF Z} (λ u → mApply {T} {Z} f (mPure {T} t))
-                      ≡⟨ cong (λ k → mPure {F-ob GEFF Z} (λ _ → k)) (mApply-pure {T} {Z} {f = f}) ⟩
+                      ≡⟨ cong (λ k → mPure {F-ob GEFF Z} (λ _ → k)) 
+                          (mApply-pure {T} {Z} {f = f}) ⟩
                     mPure {F-ob GEFF Z} (λ _ → f t)
                       ≡⟨ refl ⟩
                     mPure {F-ob GEFF Z} (λ _ → mz)
@@ -544,7 +573,8 @@ module PurityTheorems {ℓ : Level} (M : MonadOnSets {ℓ}) where
               eval mg = mApply {F-ob GEFF X} {F₀ X} (λ g → mPure {F₀ X} (g t)) mg
 
               idempotent-lemma : (x : fst X) → 
-                mApply {F-ob GEFF X} {F₀ X} (λ g → mPure {F₀ X} (g t)) (N-ob nu X x) ≡ mPure {F₀ X} (mPure {X} x)
+                mApply {F-ob GEFF X} {F₀ X} (λ g → mPure {F₀ X} (g t)) (N-ob nu X x) ≡ 
+                  mPure {F₀ X} (mPure {X} x)
               idempotent-lemma x = 
                 mApply {F-ob GEFF X} {F₀ X} (λ g → mPure {F₀ X} (g t)) (N-ob nu X x)
                   ≡⟨ sym (cong eval (mApply-pure {X} {F-ob GEFF X} {f = N-ob nu X})) ⟩
@@ -560,8 +590,12 @@ module PurityTheorems {ℓ : Level} (M : MonadOnSets {ℓ}) where
               mMap {X} {F₀ X} (mPure {X}) mx
                 ≡⟨ mPure-mMap-eq {X} mx ⟩
               mApply {X} {F₀ X} (λ x → mPure {F₀ X} (mPure {X} x)) mx
-                ≡⟨ sym (cong (λ k → mApply {X} {F₀ X} k mx) (funExt (λ x → idempotent-lemma x))) ⟩
-              mApply {X} {F₀ X} (λ x → mApply {F-ob GEFF X} {F₀ X} (λ g → mPure {F₀ X} (g t)) (N-ob nu X x)) mx
+                ≡⟨ sym 
+                    (cong (λ k → mApply {X} {F₀ X} k mx) 
+                      (funExt (λ x → idempotent-lemma x))) ⟩
+              mApply {X} {F₀ X} 
+                (λ x → 
+                  mApply {F-ob GEFF X} {F₀ X} (λ g → mPure {F₀ X} (g t)) (N-ob nu X x)) mx
                 ≡⟨ sym (mApply-assoc {X} {F-ob GEFF X} {F₀ X}) ⟩
               eval (mApply {X} {F-ob GEFF X} (N-ob nu X) mx)
                 ≡⟨ cong eval (sigma-eval-lemma {X} mx) ⟩
@@ -618,7 +652,8 @@ module PurityTheorems {ℓ : Level} (M : MonadOnSets {ℓ}) where
               mApply {Y} {GM Y} (λ z → mPure {GM Y} (λ _ → mPure {Y} z)) (gmx2mx x)
                 ≡⟨ σ-mApply-lemma {Y} (gmx2mx x) ⟩
               mPure {GM Y} (λ _ → gmx2mx x)
-                ≡⟨ sym (cong (λ k → mPure {GM Y} (λ _ → k)) (mApply-pure {X} {Y} {f = gmx2mx})) ⟩
+                ≡⟨ sym 
+                    (cong (λ k → mPure {GM Y} (λ _ → k)) (mApply-pure {X} {Y} {f = gmx2mx})) ⟩
               mPure {GM Y} (λ u → mApply {X} {Y} gmx2mx (mPure {X} x))
                 ≡⟨ sym (mApply-pure {GM X} {GM Y} {f = f-lemma}) ⟩
               mApply {GM X} {GM Y} f-lemma (mPure {GM X} (λ _ → mPure {X} x))
@@ -638,7 +673,8 @@ We now define `EnforcingPurity` which is equivalent with `Idempotent`.
 ```agda
   record EnforcingPurity : Type (lsuc ℓ) where
     field
-      enforcingPurity : {X : hSet ℓ} (mx : fst (F₀ X)) → mApply {X} {F₀ X} (λ z → mPure {F₀ X} (mPure {X} z)) mx ≡ mPure {F₀ X} mx
+      enforcingPurity : {X : hSet ℓ} (mx : fst (F₀ X)) → 
+        mApply {X} {F₀ X} (λ z → mPure {F₀ X} (mPure {X} z)) mx ≡ mPure {F₀ X} mx
 
   open EnforcingPurity
 
@@ -692,7 +728,8 @@ The main result is encoded in `enforcing-purity-implies-pure-unit-eq`.
       μT = mApply {MT} {T} (λ (w : fst MT) → mPure {T} t)
           
       lhs-inner : 
-        ∀ x → mApply {MT} {T} (λ (w : fst MT) → mPure {T} t) (mPure {MT} (mPure {T} x)) ≡ mPure {T} t
+        ∀ x → mApply {MT} {T} (λ (w : fst MT) → mPure {T} t) (mPure {MT} (mPure {T} x)) ≡ 
+          mPure {T} t
       lhs-inner x = 
         mApply {MT} {T} (λ (w : fst MT) → mPure {T} t) (mPure {MT} (mPure {T} x))
           ≡⟨ mApply-pure {MT} {T} {f = λ (w : fst MT) → mPure {T} t} ⟩
@@ -705,17 +742,22 @@ The main result is encoded in `enforcing-purity-implies-pure-unit-eq`.
       lhs-eq : μT (mApply {T} {MT} (λ z → mPure {MT} (mPure {T} z)) mt) ≡ mt
       lhs-eq = 
         μT (mApply {T} {MT} (λ z → mPure {MT} (mPure {T} z)) mt)
-          ≡⟨ mApply-assoc {T} {MT} {T} {f = λ z → mPure {MT} (mPure {T} z)} {g = λ (w : fst MT) → mPure {T} t} {mx = mt} ⟩
-        mApply {T} {T} (λ x → mApply {MT} {T} (λ (w : fst MT) → mPure {T} t) (mPure {MT} (mPure {T} x))) mt
+          ≡⟨ mApply-assoc {T} {MT} {T} {f = λ z → mPure {MT} 
+              (mPure {T} z)} {g = λ (w : fst MT) → mPure {T} t} {mx = mt} ⟩
+        mApply {T} {T} (λ x → 
+          mApply {MT} {T} (λ (w : fst MT) → mPure {T} t) (mPure {MT} (mPure {T} x))) mt
           ≡⟨ cong (λ k → mApply {T} {T} k mt) (funExt (λ x → lhs-inner x)) ⟩
         mApply {T} {T} (λ x → mPure {T} t) mt
-          ≡⟨ cong (λ k → mApply {T} {T} (λ x → mPure {T} (k x)) mt) (funExt (λ x → sym (⊤-is-singleton t x))) ⟩
+          ≡⟨ cong (λ k → 
+              mApply {T} {T} (λ x → mPure {T} (k x)) mt) 
+                (funExt (λ x → sym (⊤-is-singleton t x))) ⟩
         mApply {T} {T} (λ x → mPure {T} x) mt
           ≡⟨ mPure-mApply ⟩
         mt
           ∎
 
-      rhs-eq : μT (mApply {T} {MT} (λ z → mPure {MT} (mPure {T} z)) mt) ≡ mPure {T} t
+      rhs-eq : 
+        μT (mApply {T} {MT} (λ z → mPure {MT} (mPure {T} z)) mt) ≡ mPure {T} t
       rhs-eq = 
         μT (mApply {T} {MT} (λ z → mPure {MT} (mPure {T} z)) mt)
           ≡⟨ cong μT (enforcingPurity ep mt) ⟩
@@ -878,7 +920,8 @@ instance
     ; _>>=_ = bind
     }
     where
-      bind : ∀ {X Y : Type u} → MyErrorState E S X → (X → MyErrorState E S Y) → MyErrorState E S Y
+      bind : 
+        ∀ {X Y : Type u} → MyErrorState E S X → (X → MyErrorState E S Y) → MyErrorState E S Y
       bind mx f w = helper (mx w) f
         where
           helper : ∀ {X Y} → (E × S) ⊎ (X × S) → (X → MyErrorState E S Y) → (E × S) ⊎ (Y × S)
@@ -890,7 +933,8 @@ my-io-not-pure {u} {E} {S} e s h =
   let m = λ s → inl (e , s)
   in contradiction-from (cong (λ f → f s) (h m))
   where
-    contradiction-from : {m : MyErrorState E S (Lift u Unit)} → _≡_ {A = (E × S) ⊎ (MyErrorState E S (Lift u Unit) × S)} (inl (e , s)) (inr (m , s)) → ⊥
+    contradiction-from : {m : MyErrorState E S (Lift u Unit)} → 
+      _≡_ {A = (E × S) ⊎ (MyErrorState E S (Lift u Unit) × S)} (inl (e , s)) (inr (m , s)) → ⊥
     contradiction-from p = transport (λ i → P (p i)) tt*
       where
         P : (E × S) ⊎ (MyErrorState E S (Lift u Unit) × S) → Type lzero
