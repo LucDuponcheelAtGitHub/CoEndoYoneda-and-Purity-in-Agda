@@ -325,7 +325,23 @@ record CoEndoYonedaEquivalence
         
         step7 : B_Y ⋆ (ηm (F.F-ob Y) ⋆ G.F-hom (F.F-hom f)) ≡ (B_Y ⋆ ηm (F.F-ob Y)) ⋆ G.F-hom (F.F-hom f)
         step7 = sym (C.⋆Assoc B_Y (ηm (F.F-ob Y)) (G.F-hom (F.F-hom f)))
-      in step1 ∙ (cong (λ k → k ⋆ ηm (F.F-ob Z)) (step2 ∙ (step3 ∙ step4)) ∙ (step5 ∙ (cong (λ k → B_Y ⋆ k) step6 ∙ step7)))
+      in 
+        A ⋆ (B_Z ⋆ ηm (F.F-ob Z))
+          ≡⟨ step1 ⟩
+        (A ⋆ B_Z) ⋆ ηm (F.F-ob Z)
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Z)) step2 ⟩
+        FF.F-hom (λ g → ggfx ⋆ G.F-hom (F.F-hom (g ⋆ f))) ⋆ ηm (F.F-ob Z)
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Z)) step3 ⟩
+        FF.F-hom (λ g → (ggfx ⋆ G.F-hom (F.F-hom g)) ⋆ G.F-hom (F.F-hom f)) ⋆ ηm (F.F-ob Z)
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Z)) step4 ⟩
+        (B_Y ⋆ C_f) ⋆ ηm (F.F-ob Z)
+          ≡⟨ step5 ⟩
+        B_Y ⋆ (C_f ⋆ ηm (F.F-ob Z))
+          ≡⟨ cong (λ k → B_Y ⋆ k) step6 ⟩
+        B_Y ⋆ (ηm (F.F-ob Y) ⋆ G.F-hom (F.F-hom f))
+          ≡⟨ step7 ⟩
+        (B_Y ⋆ ηm (F.F-ob Y)) ⋆ G.F-hom (F.F-hom f)
+          ∎
 
     ggfx2τx : fst (GG.F-ob (F.F-ob X)) → NatTrans (CYEF X) (G ∘F F)
     ggfx2τx ggfx = record
@@ -390,7 +406,37 @@ record CoEndoYonedaEquivalence
         
         step14 : ggfx ⋆ C.id ≡ ggfx
         step14 = C.⋆IdR ggfx
-      in sym step1 ∙ (cong (λ k → k ⋆ ηm (F.F-ob X)) (step2 ∙ (step3 ∙ (step4 ∙ (step5 ∙ (step6 ∙ step7))))) ∙ (step8 ∙ (cong (λ k → k ⋆ (G.F-hom ggfx ⋆ ηm (F.F-ob X))) step9 ∙ (step10 ∙ (cong (λ k → k ⋆ ηm (F.F-ob X)) step11 ∙ (step12 ∙ (cong (λ k → ggfx ⋆ k) step13 ∙ step14)))))))
+      in 
+        τx2ggfx (ggfx2τx ggfx)
+          ≡⟨ sym step1 ⟩
+        (A ⋆ B) ⋆ ηm (F.F-ob X)
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) step2 ⟩
+        FF.F-hom (λ x → ggfx ⋆ G.F-hom (F.F-hom C.id)) ⋆ ηm (F.F-ob X)
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) step3 ⟩
+        FF.F-hom (λ _ → ggfx ⋆ C.id) ⋆ ηm (F.F-ob X)
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) step4 ⟩
+        FF.F-hom (λ _ → ggfx) ⋆ ηm (F.F-ob X)
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) step5 ⟩
+        FF.F-hom (λ t → C.id ⋆ ggfx) ⋆ ηm (F.F-ob X)
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) step6 ⟩
+        FF.F-hom (λ t → FF.F-hom (λ _ → t) ⋆ ggfx) ⋆ ηm (F.F-ob X)
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) step7 ⟩
+        (FF.F-hom (λ t → FF.F-hom (λ _ → t)) ⋆ G.F-hom ggfx) ⋆ ηm (F.F-ob X)
+          ≡⟨ step8 ⟩
+        FF.F-hom (λ t → FF.F-hom (λ _ → t)) ⋆ (G.F-hom ggfx ⋆ ηm (F.F-ob X))
+          ≡⟨ cong (λ k → k ⋆ (G.F-hom ggfx ⋆ ηm (F.F-ob X))) step9 ⟩
+        ηu FFT ⋆ (G.F-hom ggfx ⋆ ηm (F.F-ob X))
+          ≡⟨ step10 ⟩
+        (ηu FFT ⋆ G.F-hom ggfx) ⋆ ηm (F.F-ob X)
+          ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob X)) step11 ⟩
+        (ggfx ⋆ ηu (G.F-ob (F.F-ob X))) ⋆ ηm (F.F-ob X)
+          ≡⟨ step12 ⟩
+        ggfx ⋆ (ηu (G.F-ob (F.F-ob X)) ⋆ ηm (F.F-ob X))
+          ≡⟨ cong (λ k → ggfx ⋆ k) step13 ⟩
+        ggfx ⋆ C.id
+          ≡⟨ step14 ⟩
+        ggfx
+          ∎
 
     from_to-proof : ∀ (τx : NatTrans (CYEF X) (G ∘F F)) (Y : C.ob) → ggfx2τx-η (τx2ggfx τx) Y ≡ N-ob τx Y
     from_to-proof τx Y = 
