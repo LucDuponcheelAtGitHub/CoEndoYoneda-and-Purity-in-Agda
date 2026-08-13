@@ -514,8 +514,8 @@ module PurityTheorems {ℓ : Level} (M : MonadOnSets {ℓ}) where
     ; F-seq = λ {A B C} f g → funExt (λ x → sym (mApply-pure {B} {C}))
     }
 
-  KleisliFunctionalCategory : Type (lsuc ℓ)
-  KleisliFunctionalCategory = FunctionalCategory Kleisli KF
+  KleisliBasicFunctionalCategory : Type (lsuc ℓ)
+  KleisliBasicFunctionalCategory = BasicFunctionalCategory Kleisli KF
 
   mPure-mMap-eq :
     ∀ {X : SetsObj} (mx : fst (F₀ X)) → 
@@ -523,12 +523,12 @@ module PurityTheorems {ℓ : Level} (M : MonadOnSets {ℓ}) where
         mApply {X} {F₀ X} (λ x → mPure {F₀ X} (mPure {X} x)) mx
   mPure-mMap-eq {X} mx = refl
 
-  idempotent-equiv-kleisli-functional-category : KleisliFunctionalCategory ⇔ Idempotent
-  idempotent-equiv-kleisli-functional-category = record
+  idempotent-equiv-kleisli-basic-functional-category : KleisliBasicFunctionalCategory ⇔ Idempotent
+  idempotent-equiv-kleisli-basic-functional-category = record
     { to = λ kfc → record 
         { idempotent = λ {X} mx → 
             let
-              open FunctionalCategory kfc
+              open BasicFunctionalCategory kfc
               
               sigma-eval-lemma : ∀ {Z : SetsObj} (mz : fst (F₀ Z)) → 
                 mApply {Z} {F-ob GEFF Z} (N-ob nu Z) mz ≡ mPure {F-ob GEFF Z} (λ _ → mz)
@@ -635,15 +635,11 @@ module PurityTheorems {ℓ : Level} (M : MonadOnSets {ℓ}) where
                   ∎
             in sym (comm-lhs ∙ sym (σ-mApply-lemma {Y} (gmx2mx x)))
         in
-        record { bfc = record { nu = record 
+        record { nu = record 
                   { N-ob = λ X x → mPure {GM X} (λ _ → mPure {X} x)
                   ; N-hom = λ {X Y} f → funExt (λ x → comm {X} {Y} f x)
                   }
                ; nu-eq-T = refl
-               }
-               ; nu-eq = refl
-               ; mu = {!!}
-               ; monad-idˡ = {!!}
         }
     }
 ```
