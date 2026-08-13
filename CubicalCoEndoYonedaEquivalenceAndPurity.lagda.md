@@ -267,13 +267,65 @@ record CoEndoYonedaEquivalence
       module GG = Functor GG
 
     τx2ggfx : NatTrans (CYEF X) (G ∘F F) → fst (GG.F-ob (F.F-ob X))
-    τx2ggfx τx = {!!}
+    τx2ggfx τx = C._⋆_ (FF.F-hom (λ _ → C.id)) (N-ob τx X)
 
-    ggfx2τx-η : fst (GG.F-ob (F.F-ob X)) → ∀ Y → (C.Hom[ X , Y ] → C.Hom[ FFT , G.F-ob (F.F-ob Y) ])
-    ggfx2τx-η ggfx Y = {!!}
+    ggfx2τx-η : fst (GG.F-ob (F.F-ob X)) → ∀ Y → C.Hom[ CYEF.F-ob Y , G.F-ob (F.F-ob Y) ]
+    ggfx2τx-η ggfx Y = C._⋆_ (FF.F-hom (λ f → C._⋆_ ggfx (G.F-hom (F.F-hom f)))) (ηm (F.F-ob Y))
+
+    ggfx2τx-commute : 
+      ∀ (ggfx : fst (GG.F-ob (F.F-ob X))) {Y Z : C.ob} (f : C.Hom[ Y , Z ]) → 
+        C._⋆_ (CYEF.F-hom f) (ggfx2τx-η ggfx Z) ≡ C._⋆_ (ggfx2τx-η ggfx Y) (G.F-hom (F.F-hom f))
+    ggfx2τx-commute ggfx {Y} {Z} f =
+      let
+        A = CYEF.F-hom f
+        B_Z = FF.F-hom (λ g → C._⋆_ ggfx (G.F-hom (F.F-hom g)))
+        B_Y = FF.F-hom (λ g → C._⋆_ ggfx (G.F-hom (F.F-hom g)))
+        C_f = FF.F-hom (λ u → C._⋆_ u (G.F-hom (F.F-hom f)))
+        
+        step1 : C._⋆_ A (C._⋆_ B_Z (ηm (F.F-ob Z))) ≡ C._⋆_ (C._⋆_ A B_Z) (ηm (F.F-ob Z))
+        step1 = sym (C.⋆Assoc A B_Z (ηm (F.F-ob Z)))
+        
+        step2 : C._⋆_ A B_Z ≡ FF.F-hom (λ g → C._⋆_ ggfx (G.F-hom (F.F-hom (C._⋆_ g f))))
+        step2 = sym (FF.F-seq (λ g → C._⋆_ g f) (λ h → C._⋆_ ggfx (G.F-hom (F.F-hom h))))
+        
+        step3 : FF.F-hom (λ g → C._⋆_ ggfx (G.F-hom (F.F-hom (C._⋆_ g f)))) ≡ 
+                FF.F-hom (λ g → C._⋆_ (C._⋆_ ggfx (G.F-hom (F.F-hom g))) (G.F-hom (F.F-hom f)))
+        step3 = cong FF.F-hom (funExt (λ g → 
+                  let 
+                    inner1 : F.F-hom (C._⋆_ g f) ≡ C._⋆_ (F.F-hom g) (F.F-hom f)
+                    inner1 = F.F-seq g f
+                    
+                    inner2 : G.F-hom (F.F-hom (C._⋆_ g f)) ≡ G.F-hom (C._⋆_ (F.F-hom g) (F.F-hom f))
+                    inner2 = cong G.F-hom inner1
+                    
+                    inner3 : G.F-hom (C._⋆_ (F.F-hom g) (F.F-hom f)) ≡ C._⋆_ (G.F-hom (F.F-hom g)) (G.F-hom (F.F-hom f))
+                    inner3 = G.F-seq (F.F-hom g) (F.F-hom f)
+                    
+                    inner4 : C._⋆_ ggfx (G.F-hom (F.F-hom (C._⋆_ g f))) ≡ C._⋆_ ggfx (C._⋆_ (G.F-hom (F.F-hom g)) (G.F-hom (F.F-hom f)))
+                    inner4 = cong (λ k → C._⋆_ ggfx k) (inner2 ∙ inner3)
+                    
+                    inner5 : C._⋆_ ggfx (C._⋆_ (G.F-hom (F.F-hom g)) (G.F-hom (F.F-hom f))) ≡ C._⋆_ (C._⋆_ ggfx (G.F-hom (F.F-hom g))) (G.F-hom (F.F-hom f))
+                    inner5 = sym (C.⋆Assoc ggfx (G.F-hom (F.F-hom g)) (G.F-hom (F.F-hom f)))
+                  in inner4 ∙ inner5))
+        
+        step4 : FF.F-hom (λ g → C._⋆_ (C._⋆_ ggfx (G.F-hom (F.F-hom g))) (G.F-hom (F.F-hom f))) ≡ C._⋆_ B_Y C_f
+        step4 = FF.F-seq (λ g → C._⋆_ ggfx (G.F-hom (F.F-hom g))) (λ u → C._⋆_ u (G.F-hom (F.F-hom f)))
+        
+        step5 : C._⋆_ (C._⋆_ B_Y C_f) (ηm (F.F-ob Z)) ≡ C._⋆_ B_Y (C._⋆_ C_f (ηm (F.F-ob Z)))
+        step5 = C.⋆Assoc B_Y C_f (ηm (F.F-ob Z))
+        
+        step6 : C._⋆_ C_f (ηm (F.F-ob Z)) ≡ C._⋆_ (ηm (F.F-ob Y)) (G.F-hom (F.F-hom f))
+        step6 = N-hom mu (F.F-hom f)
+        
+        step7 : C._⋆_ B_Y (C._⋆_ (ηm (F.F-ob Y)) (G.F-hom (F.F-hom f))) ≡ C._⋆_ (C._⋆_ B_Y (ηm (F.F-ob Y))) (G.F-hom (F.F-hom f))
+        step7 = sym (C.⋆Assoc B_Y (ηm (F.F-ob Y)) (G.F-hom (F.F-hom f)))
+      in step1 ∙ (cong (λ k → C._⋆_ k (ηm (F.F-ob Z))) (step2 ∙ (step3 ∙ step4)) ∙ (step5 ∙ (cong (λ k → C._⋆_ B_Y k) step6 ∙ step7)))
 
     ggfx2τx : fst (GG.F-ob (F.F-ob X)) → NatTrans (CYEF X) (G ∘F F)
-    ggfx2τx ggfx = {!!}
+    ggfx2τx ggfx = record
+      { N-ob = ggfx2τx-η ggfx
+      ; N-hom = λ f → ggfx2τx-commute ggfx f
+      }
 
     pointfree-equivalence : (NatTrans (CYEF X) (G ∘F F)) ⇿ fst (GG.F-ob (F.F-ob X))
     pointfree-equivalence = record
