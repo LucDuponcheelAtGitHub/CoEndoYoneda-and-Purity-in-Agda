@@ -8,7 +8,7 @@ See [documentation and Cubical Agda code](https://github.com/LucDuponcheelAtGitH
 
 This file does not use `strict` and does not contain `postulate`s.
 
-Both files are work in progress.
+**Both files are work in progress.**
 
 ## In short
 
