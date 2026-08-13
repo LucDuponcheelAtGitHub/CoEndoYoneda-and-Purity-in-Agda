@@ -300,7 +300,7 @@ record CoEndoYonedaEquivalence
         A = CYEF.F-hom f
         B_Z = FF.F-hom (λ g → ggfx ⋆ G.F-hom (F.F-hom g))
         B_Y = FF.F-hom (λ g → ggfx ⋆ G.F-hom (F.F-hom g))
-        C_f = FF.F-hom (λ u → u ⋆ G.F-hom (F.F-hom f))
+        C = FF.F-hom (λ u → u ⋆ G.F-hom (F.F-hom f))
         
       in 
         A ⋆ (B_Z ⋆ ηm (F.F-ob Z))
@@ -314,9 +314,9 @@ record CoEndoYonedaEquivalence
         FF.F-hom (λ g → (ggfx ⋆ G.F-hom (F.F-hom g)) ⋆ G.F-hom (F.F-hom f)) ⋆ ηm (F.F-ob Z)
           ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Z))
               (FF.F-seq (λ g → ggfx ⋆ G.F-hom (F.F-hom g)) (λ u → u ⋆ G.F-hom (F.F-hom f))) ⟩
-        (B_Y ⋆ C_f) ⋆ ηm (F.F-ob Z)
-          ≡⟨ ⋆Assoc B_Y C_f (ηm (F.F-ob Z)) ⟩
-        B_Y ⋆ (C_f ⋆ ηm (F.F-ob Z))
+        (B_Y ⋆ C) ⋆ ηm (F.F-ob Z)
+          ≡⟨ ⋆Assoc B_Y C (ηm (F.F-ob Z)) ⟩
+        B_Y ⋆ (C ⋆ ηm (F.F-ob Z))
           ≡⟨ cong (λ k → B_Y ⋆ k) (N-hom mu (F.F-hom f)) ⟩
         B_Y ⋆ (ηm (F.F-ob Y) ⋆ G.F-hom (F.F-hom f))
           ≡⟨ sym (⋆Assoc B_Y (ηm (F.F-ob Y)) (G.F-hom (F.F-hom f))) ⟩
@@ -396,17 +396,15 @@ record CoEndoYonedaEquivalence
       ∀ (τx : NatTrans (CYEF X) (G ∘F F)) (Y : ob) → ggfx2τx-η (τx2ggfx τx) Y ≡ N-ob τx Y
     from_to-proof τx Y = 
       let
-        A : Hom[ FFT , CYEF.F-ob X ]
         A = FF.F-hom (λ _ → id)
-        B : Hom[ CYEF.F-ob X , G.F-ob (F.F-ob X) ]
         B = N-ob τx X
-        C_f : Hom[ X , Y ] → Hom[ G.F-ob (F.F-ob X) , G.F-ob (F.F-ob Y) ]
-        C_f = λ f → G.F-hom (F.F-hom f)
+        C : Hom[ X , Y ] → Hom[ G.F-ob (F.F-ob X) , G.F-ob (F.F-ob Y) ]
+        C = λ f → G.F-hom (F.F-hom f)
       in
-        FF.F-hom (λ f → (A ⋆ B) ⋆ C_f f) ⋆ ηm (F.F-ob Y)
+        FF.F-hom (λ f → (A ⋆ B) ⋆ C f) ⋆ ηm (F.F-ob Y)
           ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y)) 
-              (cong FF.F-hom (funExt (λ f → ⋆Assoc A B (C_f f)))) ⟩
-        FF.F-hom (λ f → A ⋆ (B ⋆ C_f f)) ⋆ ηm (F.F-ob Y)
+              (cong FF.F-hom (funExt (λ f → ⋆Assoc A B (C f)))) ⟩
+        FF.F-hom (λ f → A ⋆ (B ⋆ C f)) ⋆ ηm (F.F-ob Y)
           ≡⟨ cong (λ k → k ⋆ ηm (F.F-ob Y))
               (cong FF.F-hom (funExt (λ f → cong (λ k → A ⋆ k) (sym (N-hom τx f))))) ⟩
         FF.F-hom (λ f → A ⋆ (CYEF.F-hom f ⋆ N-ob τx Y)) ⋆ ηm (F.F-ob Y)
@@ -537,9 +535,9 @@ module PurityTheorems {ℓ : Level} (M : MonadOnSets {ℓ}) where
             let
               open BasicFunctionalCategory kfc
               
-              sigma-eval-lemma : ∀ {Z : SetsObj} (mz : fst (F₀ Z)) → 
+              eval-lemma : ∀ {Z : SetsObj} (mz : fst (F₀ Z)) → 
                 mApply {Z} {F-ob GEFF Z} (N-ob nu Z) mz ≡ mPure {F-ob GEFF Z} (λ _ → mz)
-              sigma-eval-lemma {Z} mz = 
+              eval-lemma {Z} mz = 
                 let
                   f : fst T → fst (F₀ Z)
                   f = λ _ → mz
@@ -579,7 +577,7 @@ module PurityTheorems {ℓ : Level} (M : MonadOnSets {ℓ}) where
                 mApply {F-ob GEFF X} {F₀ X} (λ g → mPure {F₀ X} (g t)) (N-ob nu X x)
                   ≡⟨ sym (cong eval (mApply-pure {X} {F-ob GEFF X} {f = N-ob nu X})) ⟩
                 eval (mApply {X} {F-ob GEFF X} (N-ob nu X) (mPure {X} x))
-                  ≡⟨ cong eval (sigma-eval-lemma {X} (mPure {X} x)) ⟩
+                  ≡⟨ cong eval (eval-lemma {X} (mPure {X} x)) ⟩
                 eval (mPure {F-ob GEFF X} (λ _ → mPure {X} x))
                   ≡⟨ mApply-pure {F-ob GEFF X} {F₀ X} {f = λ g → mPure {F₀ X} (g t)} ⟩
                 mPure {F₀ X} (mPure {X} x)
@@ -598,7 +596,7 @@ module PurityTheorems {ℓ : Level} (M : MonadOnSets {ℓ}) where
                   mApply {F-ob GEFF X} {F₀ X} (λ g → mPure {F₀ X} (g t)) (N-ob nu X x)) mx
                 ≡⟨ sym (mApply-assoc {X} {F-ob GEFF X} {F₀ X}) ⟩
               eval (mApply {X} {F-ob GEFF X} (N-ob nu X) mx)
-                ≡⟨ cong eval (sigma-eval-lemma {X} mx) ⟩
+                ≡⟨ cong eval (eval-lemma {X} mx) ⟩
               eval (mPure {F-ob GEFF X} (λ _ → mx))
                 ≡⟨ mApply-pure {F-ob GEFF X} {F₀ X} {f = λ g → mPure {F₀ X} (g t)} ⟩
               mPure {F₀ X} mx
@@ -612,11 +610,11 @@ module PurityTheorems {ℓ : Level} (M : MonadOnSets {ℓ}) where
           GM : (Z : SetsObj) → SetsObj
           GM Z = (fst T → fst (F₀ Z)) , isSetΠ (λ _ → snd (F₀ Z))
 
-          σ-mApply-lemma :
+          mApply-lemma :
             ∀ {Z : SetsObj} (mz : fst (F₀ Z)) →
               mApply {Z} {GM Z} (λ z → mPure {GM Z} (λ _ → mPure {Z} z)) mz ≡ 
                 mPure {GM Z} (λ _ → mz)
-          σ-mApply-lemma {Z} mz = 
+          mApply-lemma {Z} mz = 
             let 
               MZ = F₀ Z
               GMZ = GM Z
@@ -650,7 +648,7 @@ module PurityTheorems {ℓ : Level} (M : MonadOnSets {ℓ}) where
               
             in 
               mApply {Y} {GM Y} (λ z → mPure {GM Y} (λ _ → mPure {Y} z)) (gmx2mx x)
-                ≡⟨ σ-mApply-lemma {Y} (gmx2mx x) ⟩
+                ≡⟨ mApply-lemma {Y} (gmx2mx x) ⟩
               mPure {GM Y} (λ _ → gmx2mx x)
                 ≡⟨ sym 
                     (cong (λ k → mPure {GM Y} (λ _ → k)) (mApply-pure {X} {Y} {f = gmx2mx})) ⟩
